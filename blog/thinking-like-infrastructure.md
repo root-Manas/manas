@@ -1,36 +1,38 @@
 ---
-title: "Thinking Like Infrastructure: Recon That Actually Finds Stuff"
-description: "Moving beyond subdomain enumeration to understand attack surface through the lens of how infrastructure is actually built and operated."
+title: "Infrastructure Patterns and Recon: How Systems Betray Themselves"
+description: "Understanding attack surface through operational requirements and organizational constraints rather than tooling."
 pubDate: "February 11 2026"
 featured: true
 ---
 
-Most recon writes itself once you understand how companies actually build infrastructure. The problem isn't tooling—it's that people enumerate without thinking. They run subfinder, get 500 subdomains, call it recon, and wonder why they're not finding anything interesting.
+I've spent enough time doing recon to notice that most people are asking the wrong question. They want to know which tool finds the most subdomains. The better question is: why does this subdomain exist, and what does that tell me about everything else?
 
-Real recon is about understanding organizational behavior. Companies don't randomly spin up servers. Every piece of infrastructure exists for a reason, follows patterns, and leaves traces that make sense once you understand the why behind the what.
+Infrastructure doesn't materialize randomly. Engineers build systems to solve specific problems under specific constraints. Budget limitations, compliance requirements, vendor lock-in, legacy migrations—these factors create patterns. Once you recognize the pattern, you're not discovering infrastructure anymore. You're predicting it.
 
-## Start with Business Logic, Not Tools
+## Business Requirements Dictate Architecture
 
-Before touching a single tool, spend time understanding what the company actually does. A fintech handles money movement. A SaaS company has customer data and billing. An e-commerce platform manages inventory and payments. Each business model implies specific infrastructure requirements.
+A company processing video uploads needs somewhere to store files, something to transcode them, and something to serve them back out. That's not speculation—it's operational necessity.
 
-If you're looking at a company that does video processing, you know they need:
-- Storage (S3 buckets, blob storage)
-- Compute (processing clusters, worker queues)
-- CDN (delivery infrastructure)
-- APIs (upload endpoints, webhook callbacks)
+Take video processing as an example. The company needs:
+- Object storage for raw uploads
+- Worker queues for async processing
+- Compute clusters for transcoding
+- CDN for delivery
+- Webhooks for status callbacks
 
-This isn't guessing—it's basic operational necessity. Video doesn't process itself. Files don't store themselves. Every feature visible to users requires backend infrastructure, and that infrastructure has patterns.
+You can see these requirements from the product itself. A user uploads a video, gets a progress bar, receives a notification when it's done, then streams it back. Each step in that flow corresponds to infrastructure you can hunt for.
 
-## The Naming Convention Goldmine
+The same logic applies everywhere. Payment processing needs PCI-compliant environments. Multi-tenant SaaS needs customer data isolation. Real-time features need websocket infrastructure. Map the product's behavior to the systems required to support it.
 
-Companies use predictable naming because humans need systems to stay sane. Once you find one asset, you've found the template.
+## Naming Conventions as Templates
 
-Let's say you discover `api-prod-us-east-1.company.com`. Break it down:
-- `api` - service type
-- `prod` - environment 
-- `us-east-1` - region
+DevOps teams need consistency or things break. They can't remember arbitrary naming schemes across hundreds of services, so they template everything. Find the template, and you've mapped their entire fleet.
 
-Now you can extrapolate:
+You discover `api-prod-us-east-1.company.com`. That's not just one endpoint—it's documentation of their naming standard:
+
+`{service}-{environment}-{region}.company.com`
+
+Now you can derive:
 ```
 api-staging-us-east-1.company.com
 api-prod-eu-west-1.company.com
@@ -40,27 +42,27 @@ webhooks-prod-us-east-1.company.com
 internal-prod-us-east-1.company.com
 ```
 
-Most companies run multi-region for redundancy and have dev/staging/prod environments. They have admin panels, webhook handlers, and internal tools. These aren't lucky guesses—they're requirements of running production infrastructure at scale.
+Companies running at any real scale have dev/staging/prod splits. Anything customer-facing is multi-region. Admin panels exist because engineers need them. Webhook handlers exist because third-party integrations require them. These aren't assumptions—they're consequences of operational reality.
 
-## Certificate Transparency: Reading the Build Logs
+## Certificate Transparency Logs
 
-Certificate Transparency logs are essentially public build receipts. When DevOps provisions a new service, they request a cert. That cert gets logged publicly. You're not looking for secrets here—you're looking at the company's infrastructure evolution in real-time.
+CT logs are a side effect of Let's Encrypt and browser requirements. Every time someone provisions a service and needs HTTPS, a certificate gets logged publicly. You're essentially reading a timeline of infrastructure changes.
 
 ```bash
 curl -s "https://crt.sh/?q=%.example.com&output=json" | jq -r '.[].name_value' | sort -u
 ```
 
-But don't just collect domains. Read them. Look for:
+The domains themselves are useful, but the metadata matters more:
 
-**Time-based patterns**: Multiple certs issued on the same day? That's probably a deployment. Check if they share naming patterns—it might reveal the structure of an entire service cluster.
+**Issue timestamps**: Ten certificates issued on the same day with similar naming? That's a deployment, probably automated. Look for the pattern—it describes their entire service architecture.
 
-**Deprecated services**: Old certs that haven't been renewed. These systems might still be running with outdated security. Abandoned infrastructure is often poorly maintained.
+**Expiration gaps**: Certificates that expired and weren't renewed suggest abandoned infrastructure. These systems might still be running, just unmaintained. Unmaintained means unpatched.
 
-**Third-party integrations**: Subdomains like `sso-okta.example.com` or `zendesk.example.com` reveal the tech stack and potential integration points.
+**Third-party patterns**: Seeing `sso-okta.company.com` or `support-zendesk.company.com` maps out their vendor stack. Each integration is a trust boundary and potential pivot point.
 
-## Cloud Provider Metadata is a Map
+## Cloud Providers and Organizational Structure
 
-Cloud providers leak organizational structure through their architecture. An AWS account might have:
+Cloud infrastructure reveals how companies organize themselves. AWS accounts map to organizational boundaries:
 ```
 company-prod-frontend.s3.amazonaws.com
 company-prod-assets.s3.amazonaws.com  
@@ -68,28 +70,29 @@ company-staging-uploads.s3.amazonaws.com
 company-dev-backups.s3.amazonaws.com
 ```
 
-Notice the pattern? The company likely has separate AWS accounts or at minimum separate IAM permission boundaries for each environment. This tells you:
-- They follow AWS best practices (good security hygiene)
-- But also means you need to check each environment separately
-- Staging/dev often has relaxed security controls
+The naming split indicates separate permission boundaries. Either distinct AWS accounts per environment, or at minimum separate IAM policies. This is standard practice, but it means:
 
-Cloud services also expose compute identifiers. An EC2 instance at `ec2-52-12-34-56.compute-1.amazonaws.com` tells you they're in us-east-1. Reverse DNS on IP ranges can reveal entire cloud deployments.
+- They're following AWS Well-Architected guidelines
+- Each environment needs separate enumeration
+- Staging and dev likely have looser controls
 
-## GitHub and Code Repositories: The Source Code of Infrastructure
+Compute identifiers leak region data. An instance at `ec2-52-12-34-56.compute-1.amazonaws.com` is in us-east-1. Reverse DNS on the IP block often reveals more instances in the same deployment.
 
-Public repositories aren't just about finding API keys (though that happens). They reveal:
+## Code Repositories as Documentation
 
-**CI/CD configurations**: `.github/workflows`, `.gitlab-ci.yml`, `Jenkinsfile` show you the deployment pipeline. Where do builds push to? What environments exist? What scripts run during deployment?
+Public repos occasionally leak credentials, but that's not why they're valuable. They document how things are built:
 
-**Infrastructure as Code**: Terraform, CloudFormation, Ansible configs describe the entire infrastructure. Even if the actual resources aren't exposed, you learn the architecture, networking setup, and service dependencies.
+**CI/CD configs**: `.github/workflows`, `.gitlab-ci.yml`, `Jenkinsfile`—these show the deployment pipeline. What environments get deployed to? What services depend on each other? What secrets are referenced (even if the values aren't there)?
 
-**Dockerfile and docker-compose**: Container configs reveal internal service names, environment variables, and network topology. An internal service called `user-service` talking to `payment-api` tells you exactly what to look for.
+**Infrastructure as Code**: Terraform and CloudFormation templates are literal blueprints. Security groups, network topology, service mesh configuration—all explicitly defined. Even in private repos, people fork and reuse patterns.
 
-**Historical commits**: Don't just look at main branch. Check commit history. Developers frequently commit credentials, then remove them in the next commit. The credentials are still in git history. They also hardcode staging URLs, internal IPs, and API endpoints during development.
+**Container definitions**: Docker Compose files map service dependencies. If `user-service` talks to `payment-api` and `notification-worker`, you know those services exist and how they communicate.
 
-## JavaScript: Reading the Client-Side Documentation
+**Git history**: The current branch is sanitized. Git history is not. Developers commit credentials, remove them, and think they're safe. The secret is still in the reflog. Same with staging URLs, internal endpoints, and debug configurations.
 
-Modern webapps ship their API schema to the client. Open the browser console and look at network requests, but also read the actual JavaScript source:
+## Client-Side Code Ships Everything
+
+SPAs and modern web apps bundle their entire API surface into the JavaScript you download. Developers configure API endpoints, feature flags, and internal routes right in the client code because the app needs them at runtime:
 
 ```javascript
 const API_ENDPOINTS = {
@@ -99,46 +102,45 @@ const API_ENDPOINTS = {
 }
 ```
 
-Developers do this constantly. Feature flags, internal API routes, admin endpoints—all exposed in client code because someone needed to test something and forgot to remove it.
+This happens constantly. A developer needs to test a feature, hardcodes the endpoint, and forgets to remove it before shipping. Feature flags, admin routes, internal APIs—all sitting in minified JavaScript.
 
-Use browser dev tools to check:
-- localStorage (API keys, tokens)
-- sessionStorage (temporary credentials)
-- Service Workers (cached API responses)
-- Web Workers (background processing logic)
+Browser dev tools make this trivial:
+- localStorage/sessionStorage often contain tokens and API keys
+- Service Workers cache API responses including internal endpoints
+- Global scope pollution: run `Object.keys(window)` and look for anything custom
 
-Run `Object.keys(window)` in console. Look for anything app-specific. Run `console.log(window.appConfig)` or similar. Developers attach config objects to the global scope all the time.
+Developers frequently attach config objects to the window for debugging: `window.__CONFIG__`, `window.appSettings`, `window.API_BASE`. Check for them.
 
-## DNS Enumeration: Beyond Brute Force
+## DNS Records as Infrastructure Metadata
 
-DNS isn't just about finding subdomains—it's about understanding infrastructure topology.
+DNS records describe more than hostnames. They document email infrastructure, security policies, and service dependencies.
 
-**Zone transfers** (usually disabled but worth checking):
+**Zone transfers** (rarely work, but trivial to test):
 ```bash
 dig @ns1.example.com example.com AXFR
 ```
 
-**SPF records reveal email infrastructure**:
+**SPF records** document email infrastructure:
 ```bash
 dig example.com TXT | grep spf
 ```
-This shows which mail servers and services (SendGrid, Mailgun, G Suite) are authorized to send mail. Each integration is a potential attack surface.
+Shows authorized mail servers: SendGrid, Mailgun, G Suite, whatever they use. Each is a potential integration point and trust boundary.
 
-**DMARC records show monitoring systems**:
+**DMARC records** expose reporting endpoints:
 ```bash
 dig _dmarc.example.com TXT
 ```
-The `rua=` field contains email addresses where reports are sent, often revealing internal domains or third-party security services.
+The `rua=` field contains email addresses for aggregate reports. These often point to internal domains or third-party security monitoring services.
 
-**CAA records limit certificate authorities**:
+**CAA records** restrict certificate issuance:
 ```bash
 dig example.com CAA
 ```
-Tells you which CAs the company trusts. If they only allow one CA, that's potentially a social engineering vector (call the CA impersonating the company).
+Lists trusted CAs. If they restrict to a single CA, you know their certificate issuance process. Potentially useful for social engineering or understanding their security controls.
 
-## Reverse IP Lookups and Neighbor Analysis
+## IP Space and Neighbor Discovery
 
-Shared hosting and cloud infrastructure means IP addresses often host multiple services. If you find one interesting server, check what else is on that IP or nearby IPs.
+Cloud infrastructure and shared hosting means IPs rarely map 1:1 with services. One IP often hosts multiple domains, and related services cluster in the same subnet.
 
 ```bash
 # Find other domains on same IP
@@ -150,11 +152,11 @@ for i in {1..255}; do
 done
 ```
 
-Companies often use sequential IPs for related services. Finding `db-prod.example.com` at `52.12.34.10` might mean `db-staging.example.com` is at `52.12.34.11`.
+Network teams allocate IPs sequentially for operational sanity. If `db-prod.example.com` resolves to `52.12.34.10`, there's a decent chance `52.12.34.11` and `52.12.34.12` are related services in the same deployment.
 
-## Favicon Hashing: Infrastructure Fingerprinting
+## Favicon Hashing for Fingerprinting
 
-Default admin panels, frameworks, and dashboards serve default favicons. These can be hashed and searched across the internet.
+Admin panels and frameworks ship with default favicons. Most people never change them. Hash the favicon and you can find every instance of that software across the internet.
 
 ```bash
 curl -s https://target.com/favicon.ico | md5sum
@@ -165,78 +167,79 @@ Search that hash on Shodan:
 http.favicon.hash:12345678
 ```
 
-You'll find every instance of that admin panel, framework, or appliance running across the internet, including potentially unlinked instances belonging to your target.
+You'll find every instance of that software, including ones your target forgot about. Unlinked admin panels, forgotten appliances, abandoned monitoring dashboards.
 
-## Wayback Machine: Infrastructure Archaeology
+## Historical Snapshots
 
-The Internet Archive captures historical snapshots of websites. Old versions might reveal:
-- Deprecated APIs still running
-- Development/staging URLs accidentally linked
-- Historical subdomains
-- Old directory structures
+The Wayback Machine archives old website versions. Companies evolve, but they rarely clean up properly. Old snapshots reveal:
+- APIs that were documented but never deprecated
+- Staging URLs that were accidentally public
+- Old subdomains still responding
+- Directory structures that still exist
 
 ```bash
 curl "http://web.archive.org/cdx/search/cdx?url=*.example.com&output=json&fl=original&collapse=urlkey"
 ```
 
-Companies rarely decommission infrastructure properly. That old API from 2019? Might still be running with outdated security.
+Proper decommissioning requires effort. Most companies don't bother. That API endpoint from 3 years ago? Probably still running, just not maintained or monitored.
 
-## Social Engineering Infrastructure Discovery
+## Engineers Document Everything Publicly
 
-People talk. Engineers especially:
-- Job postings mention tech stacks (AWS, Kubernetes, specific frameworks)
-- Conference talks reveal architecture decisions
-- Blog posts discuss migration strategies
-- Stack Overflow questions include internal domain names
-- LinkedIn profiles list technologies used
+People write blog posts, give conference talks, and answer Stack Overflow questions. Engineers especially, because sharing knowledge is how you build reputation.
 
-Search for `example.com site:stackoverflow.com` or `example.com site:github.com`. Engineers post code snippets, debug logs, and configuration examples containing internal details.
+- Job postings list the tech stack (AWS, Kubernetes, whatever they use)
+- Conference talks explain architecture decisions
+- Blog posts document migrations and technical challenges
+- Stack Overflow answers include sanitized versions of real code
+- LinkedIn profiles enumerate technologies and projects
 
-## Target Selection: Not All Infrastructure is Equal
+Search `example.com site:stackoverflow.com` or `site:github.com`. You'll find engineers debugging issues with real (or barely obfuscated) internal details.
 
-Once you have a map, prioritize:
+## Prioritization
 
-**High-value, low-security targets**:
-- Staging/dev environments (often less monitored)
-- Legacy systems (outdated patches)
-- Acquired companies' infrastructure (inconsistent security)
-- Third-party integrations (shared responsibility confusion)
+Not all infrastructure is equally valuable or equally defended. Once you have a map, focus on asymmetries:
 
-**Internal tools exposed externally**:
-- Admin panels
-- Employee-only apps
-- CI/CD dashboards
-- Monitoring systems
+**Lower security environments**:
+- Staging and dev (less monitoring, weaker controls)
+- Legacy systems (outdated dependencies, forgotten about)
+- Acquired companies (inconsistent security posture)
+- Third-party integrations (unclear ownership)
 
-**Data storage**:
-- S3 buckets (public read/write)
-- Database endpoints (MongoDB, Redis)
-- Backup servers
+**Internal tools accidentally public**:
+- Admin panels (often authenticated but discoverable)
+- Employee apps (sometimes IP-restricted, sometimes not)
+- CI/CD dashboards (Jenkins, GitLab, etc.)
+- Monitoring and logging systems (Grafana, Kibana)
 
-## Putting It Together: A Real Workflow
+**Data stores**:
+- Object storage with misconfigured ACLs
+- Databases exposed to the internet
+- Backup systems (often deprioritized in security reviews)
 
-1. **Business analysis**: What does the company do? What infrastructure is required?
+## How This Actually Works
 
-2. **Initial enumeration**: Passive DNS (crt.sh, VirusTotal), public repos, tech blog posts
+Here's the process:
 
-3. **Pattern recognition**: Find naming conventions, extrapolate environments/regions
+1. **Understand the business**: What does the product do? What infrastructure does that require?
 
-4. **Expansion**: Use discovered patterns to find related infrastructure
+2. **Passive enumeration**: CT logs, DNS records, public repos, archived pages
 
-5. **Fingerprinting**: Identify technologies, frameworks, and services running
+3. **Pattern extraction**: Find one asset with a clear naming convention, derive the template
 
-6. **Prioritization**: Focus on staging, legacy, and poorly maintained systems
+4. **Expansion**: Apply the template across environments, regions, and service types
 
-7. **Validation**: Verify discovered assets are actually accessible and relevant
+5. **Fingerprinting**: Identify what's actually running (technologies, versions, frameworks)
 
-## The Mindset Shift
+6. **Prioritization**: Focus on lower-security targets (staging, legacy, forgotten systems)
 
-Stop thinking like a scanner. Think like an engineer who needs to understand a new codebase. Read the infrastructure the way you'd read code:
-- What patterns exist?
-- Why was it built this way?
-- What constraints did they face?
-- Where are the natural weak points?
+7. **Validation**: Confirm assets are real, accessible, and relevant
 
-Companies build predictably because infrastructure requires predictability. Your job is to understand their system well enough that finding the next piece of infrastructure feels inevitable, not lucky.
+## Different Mental Model
 
-Good recon doesn't depend on finding that one weird trick. It's about building a mental model of the target's infrastructure so complete that discovering new assets is a logical next step, not a random find.
+Most people treat recon like running a tool and collecting output. That's not wrong, but it's incomplete. The tool gives you data. You need to extract meaning.
+
+Read infrastructure the way you'd read code. Look for patterns, understand constraints, identify assumptions. Companies build systems to solve problems under specific limitations. Those limitations create predictable patterns.
+
+Your goal isn't to find everything through brute force. It's to understand the system well enough that the next asset you discover feels obvious in hindsight. You're not guessing—you're reasoning from organizational behavior and operational requirements.
+
+Good recon is when you find something and think "of course that exists, they need it for X." Bad recon is finding things randomly and not understanding why they're there.

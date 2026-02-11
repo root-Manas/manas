@@ -6,9 +6,9 @@
 const POSTS = [
     {
         slug: 'thinking-like-infrastructure',
-        title: 'Thinking Like Infrastructure: Recon That Actually Finds Stuff',
+        title: 'Infrastructure Patterns and Recon: How Systems Betray Themselves',
         date: '2026-02-11',
-        description: 'Moving beyond subdomain enumeration to understand attack surface through the lens of how infrastructure is actually built and operated.'
+        description: 'Understanding attack surface through operational requirements and organizational constraints rather than tooling.'
     },
     {
         slug: 'antenna-wave-propagation',
