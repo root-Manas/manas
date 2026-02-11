@@ -5,6 +5,12 @@
 // Blog posts configuration
 const POSTS = [
     {
+        slug: 'thinking-like-infrastructure',
+        title: 'Thinking Like Infrastructure: Recon That Actually Finds Stuff',
+        date: '2026-02-11',
+        description: 'Moving beyond subdomain enumeration to understand attack surface through the lens of how infrastructure is actually built and operated.'
+    },
+    {
         slug: 'antenna-wave-propagation',
         title: 'Antenna Theory and Wave Propagation: Fundamentals for Security Researchers',
         date: '2024-06-05',
