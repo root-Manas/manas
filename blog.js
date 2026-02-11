@@ -11,12 +11,6 @@ const POSTS = [
         description: 'A dive into the physics of RF communications, antenna design, and the implications for wireless security and signals intelligence.'
     },
     {
-        slug: 'PPF-model',
-        title: 'The Zero-Sum Silicon Game: Analyzing US Tech Dominance via the PPF Model',
-        date: '2024-06-01',
-        description: 'An economic analysis of the trade-offs between semiconductor manufacturing and software development using the Production Possibilities Frontier framework.'
-    },
-    {
         slug: 'cron_jobs_to_priviliage_esc',
         title: 'Cron Jobs and Privilege Escalation: Mechanics and Mitigation',
         date: '2024-05-09',
