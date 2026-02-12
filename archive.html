@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet">
     <script src="layout.js?v=3"></script>
     <style>
@@ -123,9 +123,12 @@
 </head>
 
 <body>
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+
     <!-- Header Navigation -->
     <header>
-        <nav>
+        <nav role="navigation" aria-label="Main navigation">
             <a href="index.html" class="logo">Manas.</a>
             <ul>
                 <li><a href="index.html#about">About</a></li>
@@ -150,10 +153,10 @@
         </nav>
     </header>
 
-    <main class="archive-container">
+    <main class="archive-container" id="main-content">
         <a href="index.html" class="back-link">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M19 12H5" />
                 <path d="M12 19l-7-7 7-7" />
             </svg>

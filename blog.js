@@ -8,21 +8,32 @@ const POSTS = [
         slug: 'thinking-like-infrastructure',
         title: 'Infrastructure Patterns and Recon: How Systems Betray Themselves',
         date: '2026-02-11',
-        description: 'Understanding attack surface through operational requirements and organizational constraints rather than tooling.'
+        description: 'Understanding attack surface through operational requirements and organizational constraints rather than tooling.',
+        tags: ['recon', 'infrastructure', 'methodology']
     },
     {
         slug: 'antenna-wave-propagation',
         title: 'Antenna Theory and Wave Propagation: Fundamentals for Security Researchers',
         date: '2024-06-05',
-        description: 'A dive into the physics of RF communications, antenna design, and the implications for wireless security and signals intelligence.'
+        description: 'A dive into the physics of RF communications, antenna design, and the implications for wireless security and signals intelligence.',
+        tags: ['RF', 'wireless', 'signals']
     },
     {
         slug: 'cron_jobs_to_priviliage_esc',
         title: 'Cron Jobs and Privilege Escalation: Mechanics and Mitigation',
         date: '2024-05-09',
-        description: 'An analysis of misconfigured cron jobs as a vector for privilege escalation in Linux environments.'
+        description: 'An analysis of misconfigured cron jobs as a vector for privilege escalation in Linux environments.',
+        tags: ['linux', 'privilege-escalation', 'security']
     }
 ];
+
+// Calculate reading time from markdown content
+function calculateReadingTime(markdown) {
+    const wordsPerMinute = 200;
+    const words = markdown.trim().split(/\s+/).length;
+    const minutes = Math.ceil(words / wordsPerMinute);
+    return minutes;
+}
 
 // Format date for display
 function formatDate(dateStr) {
@@ -61,11 +72,12 @@ function renderBlogPosts(limit = null, append = false) {
     }
 
     const postsHTML = displayPosts.map(post => `
-        <article class="blog-post" onclick="openPost('${post.slug}')">
+        <article class="blog-post" onclick="openPost('${post.slug}')" role="article">
             <div class="blog-date">${formatDate(post.date)}</div>
             <div class="blog-content">
                 <h3>${post.title}</h3>
                 <p>${post.description}</p>
+                ${post.tags ? `<div class="blog-tags">${post.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>` : ''}
             </div>
         </article>
     `).join('');
@@ -83,7 +95,7 @@ function renderBlogPosts(limit = null, append = false) {
         if (showButton) {
             const btnHTML = `
                 <div class="show-more-container">
-                    <button class="show-more-btn" onclick="expandBlogPosts()">Show More</button>
+                    <button class="show-more-btn" onclick="expandBlogPosts()" aria-label="Show more blog posts">Show More</button>
                 </div>
             `;
             container.insertAdjacentHTML('beforeend', btnHTML);
@@ -141,21 +153,63 @@ async function loadPost(slug) {
             });
         }
 
+        // Calculate reading time
+        const readingTime = calculateReadingTime(content);
+
+        // Generate table of contents
+        const toc = generateTableOfContents(content);
+
         document.title = `${metadata.title || 'Blog Post'} - Manas`;
+
+        // Update meta tags for social sharing
+        updateMetaTags(metadata, slug);
 
         const html = `
             <header class="post-header">
                 <span class="post-date">${formatDate(metadata.pubDate || new Date())}</span>
                 <h1 class="post-title">${metadata.title || 'Untitled'}</h1>
+                <div class="post-meta">
+                    <span class="reading-time" aria-label="Estimated reading time">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        ${readingTime} min read
+                    </span>
+                </div>
             </header>
+            ${toc ? `<nav class="table-of-contents" role="navigation" aria-label="Table of contents">${toc}</nav>` : ''}
             <div class="post-content">
                 ${marked.parse(content)}
+            </div>
+            <div class="post-footer">
+                <div class="share-buttons">
+                    <span>Share:</span>
+                    <button onclick="sharePost('twitter')" aria-label="Share on Twitter" class="share-btn twitter">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"></path>
+                        </svg>
+                    </button>
+                    <button onclick="sharePost('linkedin')" aria-label="Share on LinkedIn" class="share-btn linkedin">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"></path>
+                            <circle cx="4" cy="4" r="2"></circle>
+                        </svg>
+                    </button>
+                    <button onclick="copyLink()" aria-label="Copy link" class="share-btn copy">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"></path>
+                            <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
         `;
 
         container.innerHTML = html;
 
-        container.innerHTML = html;
+        // Add copy buttons to code blocks
+        addCopyButtonsToCodeBlocks();
 
         // Robustly trigger MathJax
         const triggerMathJax = () => {
@@ -178,6 +232,146 @@ async function loadPost(slug) {
                 <a href="archive.html" class="back-link" style="justify-content: center; margin-top: 24px;">Back to Archive</a>
             </div>
         `;
+    }
+}
+
+// Generate table of contents from markdown
+function generateTableOfContents(markdown) {
+    const headings = [];
+    const lines = markdown.split('\n');
+    
+    lines.forEach(line => {
+        const match = line.match(/^(#{2,3})\s+(.+)/);
+        if (match) {
+            const level = match[1].length;
+            const text = match[2];
+            const id = text.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+            headings.push({ level, text, id });
+        }
+    });
+
+    if (headings.length < 3) return null; // Don't show TOC for short posts
+
+    const tocItems = headings.map(h => 
+        `<li class="toc-level-${h.level}"><a href="#${h.id}">${h.text}</a></li>`
+    ).join('');
+
+    return `
+        <details class="toc-wrapper" open>
+            <summary>Table of Contents</summary>
+            <ul class="toc-list">${tocItems}</ul>
+        </details>
+    `;
+}
+
+// Update meta tags for social sharing
+function updateMetaTags(metadata, slug) {
+    const url = `${window.location.origin}/post.html?slug=${slug}`;
+    const title = metadata.title || 'Blog Post';
+    const description = metadata.description || '';
+
+    // Update or create meta tags
+    const metaTags = [
+        { property: 'og:title', content: title },
+        { property: 'og:description', content: description },
+        { property: 'og:url', content: url },
+        { property: 'og:type', content: 'article' },
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: title },
+        { name: 'twitter:description', content: description },
+    ];
+
+    metaTags.forEach(tag => {
+        const key = tag.property ? 'property' : 'name';
+        const value = tag.property || tag.name;
+        let element = document.querySelector(`meta[${key}="${value}"]`);
+        
+        if (!element) {
+            element = document.createElement('meta');
+            element.setAttribute(key, value);
+            document.head.appendChild(element);
+        }
+        element.setAttribute('content', tag.content);
+    });
+}
+
+// Add copy buttons to code blocks
+function addCopyButtonsToCodeBlocks() {
+    const codeBlocks = document.querySelectorAll('pre code');
+    
+    codeBlocks.forEach(block => {
+        const pre = block.parentElement;
+        if (pre.querySelector('.copy-btn')) return; // Already added
+
+        const button = document.createElement('button');
+        button.className = 'copy-btn';
+        button.setAttribute('aria-label', 'Copy code to clipboard');
+        button.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+            </svg>
+        `;
+
+        button.addEventListener('click', async () => {
+            const code = block.textContent;
+            try {
+                await navigator.clipboard.writeText(code);
+                button.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                `;
+                setTimeout(() => {
+                    button.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+                        </svg>
+                    `;
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy:', err);
+            }
+        });
+
+        pre.style.position = 'relative';
+        pre.appendChild(button);
+    });
+}
+
+// Share post on social media
+function sharePost(platform) {
+    const url = window.location.href;
+    const title = document.querySelector('.post-title')?.textContent || 'Check out this post';
+
+    const shareUrls = {
+        twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`,
+        linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`
+    };
+
+    if (shareUrls[platform]) {
+        window.open(shareUrls[platform], '_blank', 'width=600,height=400');
+    }
+}
+
+// Copy link to clipboard
+async function copyLink() {
+    const url = window.location.href;
+    try {
+        await navigator.clipboard.writeText(url);
+        const btn = document.querySelector('.share-btn.copy');
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = `
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        `;
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+        }, 2000);
+    } catch (err) {
+        console.error('Failed to copy link:', err);
     }
 }
 

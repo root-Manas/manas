@@ -10,14 +10,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet">
 </head>
 
 <body>
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+    
     <!-- Header Navigation -->
     <header>
-        <nav>
+        <nav role="navigation" aria-label="Main navigation">
             <a href="#" class="logo">Manas.</a>
             <ul>
                 <li><a href="#about">About</a></li>
@@ -42,9 +45,9 @@
         </nav>
     </header>
 
-    <main>
+    <main id="main-content">
         <!-- Hero Section -->
-        <section id="hero">
+        <section id="hero" aria-labelledby="hero-heading">
             <div class="hero-content">
                 <div class="hero-badge">Hello good to have you here 😊</div>
                 <h1>I am Manas</h1>
