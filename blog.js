@@ -12,6 +12,13 @@ const POSTS = [
         tags: ['recon', 'infrastructure', 'methodology']
     },
     {
+        slug: 'PPF-model',
+        title: 'The Zero-Sum Silicon Game: Analyzing US Tech Dominance via the PPF Model',
+        date: '2024-06-01',
+        description: 'An economic analysis of the trade-offs between semiconductor manufacturing and software development using the Production Possibilities Frontier framework.',
+        tags: ['economics', 'semiconductors', 'analysis']
+    },
+    {
         slug: 'antenna-wave-propagation',
         title: 'Antenna Theory and Wave Propagation: Fundamentals for Security Researchers',
         date: '2024-06-05',
@@ -27,6 +34,19 @@ const POSTS = [
     }
 ];
 
+function parseDateInput(dateInput) {
+    if (dateInput instanceof Date) return dateInput;
+    if (typeof dateInput !== 'string') return new Date(dateInput);
+
+    const isoMatch = dateInput.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (isoMatch) {
+        const [, year, month, day] = isoMatch;
+        return new Date(Number(year), Number(month) - 1, Number(day));
+    }
+
+    return new Date(dateInput);
+}
+
 // Calculate reading time from markdown content
 function calculateReadingTime(markdown) {
     const wordsPerMinute = 200;
@@ -37,12 +57,20 @@ function calculateReadingTime(markdown) {
 
 // Format date for display
 function formatDate(dateStr) {
-    const date = new Date(dateStr);
+    const date = parseDateInput(dateStr);
     return date.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
         day: 'numeric'
     });
+}
+
+function createHeadingId(text) {
+    return text
+        .toLowerCase()
+        .replace(/[^\w\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-');
 }
 
 // Render blog posts list
@@ -60,7 +88,7 @@ function renderBlogPosts(limit = null, append = false) {
     }
 
     // Sort posts by date (newest first)
-    const sortedPosts = [...POSTS].sort((a, b) => new Date(b.date) - new Date(a.date));
+    const sortedPosts = [...POSTS].sort((a, b) => parseDateInput(b.date) - parseDateInput(a.date));
 
     // Determine how many posts to show
     let displayPosts = sortedPosts;
@@ -72,7 +100,7 @@ function renderBlogPosts(limit = null, append = false) {
     }
 
     const postsHTML = displayPosts.map(post => `
-        <article class="blog-post" onclick="openPost('${post.slug}')" role="article">
+        <article class="blog-post" onclick="openPost('${post.slug}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openPost('${post.slug}')}" role="link" tabindex="0">
             <div class="blog-date">${formatDate(post.date)}</div>
             <div class="blog-content">
                 <h3>${post.title}</h3>
@@ -127,7 +155,7 @@ async function loadPost(slug) {
         const markdown = await response.text();
 
         // Parse Frontmatter
-        const frontmatterRegex = /^---\n([\s\S]*?)\n---/;
+        const frontmatterRegex = /^---\r?\n([\s\S]*?)\r?\n---/;
         const match = markdown.match(frontmatterRegex);
 
         let content = markdown;
@@ -208,6 +236,11 @@ async function loadPost(slug) {
 
         container.innerHTML = html;
 
+        // Sync heading IDs with the generated table of contents.
+        container.querySelectorAll('.post-content h2, .post-content h3').forEach(heading => {
+            heading.id = createHeadingId(heading.textContent || '');
+        });
+
         // Add copy buttons to code blocks
         addCopyButtonsToCodeBlocks();
 
@@ -245,7 +278,7 @@ function generateTableOfContents(markdown) {
         if (match) {
             const level = match[1].length;
             const text = match[2];
-            const id = text.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+            const id = createHeadingId(text);
             headings.push({ level, text, id });
         }
     });

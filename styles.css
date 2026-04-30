@@ -833,7 +833,7 @@ footer p {
     left: 0;
     width: 8px;
     height: 8px;
-    background-color: var(--color-text);
+    background-color: var(--text-primary);
     border-radius: 50%;
     pointer-events: none;
     z-index: 9999;
@@ -851,7 +851,7 @@ footer p {
     height: 40px;
     background-color: rgba(186, 78, 58, 0.1);
     /* transparent accent */
-    border: 1px solid var(--color-accent);
+    border: 1px solid var(--accent-olive);
     border-radius: 50%;
     pointer-events: none;
     z-index: 9998;
@@ -891,7 +891,7 @@ footer p {
 .custom-cursor-follower.clicking {
     width: 30px;
     height: 30px;
-    border-color: var(--color-accent);
+    border-color: var(--accent-olive);
     background-color: rgba(186, 78, 58, 0.4);
     transition: width 0.1s ease, height 0.1s ease, background-color 0.1s ease;
 }
