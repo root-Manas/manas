@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 
 const base = 'https://manasraj.vercel.app';
 const routes = [
-  ['/', 'PERSONAL HOMELAB'],
+  ['/', "Hello, I'm"],
   ['/clix/', 'portfolio-theme.css'],
   ['/clix/style.css', '--'],
   ['/clix/portfolio-theme.css', '--'],
@@ -11,7 +11,7 @@ const routes = [
   ['/articles/antenna-wave-propagation.html', 'Radio link budget'],
   ['/articles/thinking-like-infrastructure.html', 'Evidence-weighting exercise'],
   ['/articles/cron_jobs_to_priviliage_esc.html', 'Trace the boundary'],
-  ['/archive.html', 'FIELD NOTES'],
+  ['/archive.html', 'WRITING BY MANAS'],
   ['/sitemap.xml', '/articles/PPF-model.html'],
   ['/feed.xml', 'rss version'],
   ['/public/figures/ppf-system.svg', '<svg'],

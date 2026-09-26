@@ -1,0 +1,33 @@
+/* Keep the portfolio conversational; the tools and article pages retain their own density. */
+body[data-page=home] .hero-grid{min-height:590px}
+body[data-page=home] .hero-copy{padding-top:58px;padding-bottom:58px}
+.hero-intro{display:flex;align-items:center;gap:25px}
+.hero-portrait{display:block;flex:none;width:120px;height:120px;object-fit:cover;border:3px solid #fff;box-shadow:8px 8px 0 var(--red)}
+body[data-page=home] .hero h1{margin:8px 0 0;font-size:clamp(64px,6.5vw,92px);font-weight:650;line-height:1;letter-spacing:-.065em}
+body[data-page=home] .hero-copy .eyebrow{color:var(--muted);font:500 12px var(--body);letter-spacing:normal;text-transform:none}
+body[data-page=home] .hero-copy>p{max-width:580px;font-size:18px;line-height:1.75;color:#d0d0d0;margin:35px 0 0}
+body[data-page=home] .hero-actions{margin-top:32px}
+body[data-page=home] .hero-quick{margin-top:29px}
+body[data-page=home] .button{font-weight:650}
+body[data-page=home] .hero-deck{margin-top:42px;margin-bottom:42px}
+body[data-page=home] .deck-overlay strong{font-weight:650}
+body[data-page=home] .section{padding-top:86px;padding-bottom:94px}
+body[data-page=home] .section-title-row{margin:18px 0 34px}
+body[data-page=home] .section-title-row h2,body[data-page=home] .about-grid h2{font-size:clamp(38px,4vw,56px);font-weight:500;letter-spacing:-.055em;line-height:1.1}
+body[data-page=home] .section-title-row p{max-width:700px;font-size:16px;line-height:1.65}
+body[data-page=home] .section-no{font-weight:500;letter-spacing:.08em}
+body[data-page=home] .about-grid{gap:65px;margin-top:27px}
+body[data-page=home] .about-grid h2{max-width:440px}
+.about-aside{color:var(--muted);font-size:10px;letter-spacing:.07em;margin:28px 0 0}
+body[data-page=home] .about-copy>p{font-size:17px;line-height:1.8;margin:0 0 20px;max-width:600px}
+body[data-page=home] .about-copy>.about-quote{font-size:23px;font-weight:500;line-height:1.4;color:var(--text);margin:29px 0 28px;padding-left:17px;border-left:3px solid var(--red)}
+.about-links{display:flex;flex-wrap:wrap;gap:24px}.about-links a{font-size:13px;font-weight:600;border-bottom:1px solid var(--line);padding-bottom:5px}.about-links a:hover{color:var(--red);border-color:var(--red)}
+body[data-page=home] .project-body h3{font-size:clamp(29px,3vw,43px);font-weight:550;letter-spacing:-.055em}
+body[data-page=home] .project-body>p{font-size:15px;line-height:1.7}
+body[data-page=home] .tool-card h3{font-size:25px;font-weight:650;letter-spacing:-.035em}
+body[data-page=home] .post-card h3{font-weight:650}
+html[data-theme=light] body[data-page=home] .hero-copy>p{color:#4f4b46}
+@media(max-width:1150px){body[data-page=home] .hero h1{font-size:72px}.hero-intro{gap:18px}.hero-portrait{width:100px;height:100px}}
+@media(max-width:760px){body[data-page=home] .hero-copy{padding-top:52px;padding-bottom:32px}body[data-page=home] .hero h1{font-size:clamp(57px,11vw,78px)}.hero-portrait{width:88px;height:88px;box-shadow:5px 5px 0 var(--red)}.hero-intro{gap:19px}body[data-page=home] .hero-copy>p{font-size:16px;margin-top:28px}body[data-page=home] .section{padding-top:67px;padding-bottom:75px}body[data-page=home] .about-grid{gap:25px}body[data-page=home] .about-copy>p{font-size:16px}body[data-page=home] .project-body h3{font-size:32px}}
+@media(max-width:420px){body[data-page=home] .hero h1{font-size:56px}.hero-portrait{width:78px;height:78px}}
+@media(max-width:760px){body[data-page=home] .deck-slide:first-child video{object-fit:contain;object-position:center top;background:#101820}body[data-page=home] .deck-window{height:250px}body[data-page=home] .deck-overlay{bottom:12px;left:12px;padding:8px 11px}body[data-page=home] .deck-overlay strong{font-size:28px}}

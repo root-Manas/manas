@@ -12,6 +12,7 @@ if (!reducedMotion && window.anime?.animate) {
   const { animate, stagger } = window.anime;
   animate('.hero-meta span', { opacity: [0, 1], translateY: [12, 0], duration: 520, delay: stagger(90), ease: 'out(3)' });
   animate('.hero-copy .eyebrow, .hero-copy h1, .hero-copy p, .hero-actions', { opacity: [0, 1], translateY: [24, 0], duration: 780, delay: stagger(105, { start: 110 }), ease: 'out(3)' });
+  animate('.hero-portrait', { opacity: [0, 1], scale: [.86, 1], rotate: [-6, 0], duration: 850, delay: 120, ease: 'out(3)' });
   animate('.hero-deck', { opacity: [0, 1], translateX: [24, 0], duration: 850, delay: 190, ease: 'out(3)' });
   animate('.pulse-dot, .console-state i, .section-status i', { opacity: [1, .35], duration: 1300, alternate: true, loop: true, ease: 'inOut(2)' });
   const seen = new WeakSet();

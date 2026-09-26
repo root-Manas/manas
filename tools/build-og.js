@@ -4,7 +4,7 @@ const path = require('node:path');
 const { chromium } = require('playwright-core');
 const root = path.resolve(__dirname, '..');
 const targets = [
-  { file: 'public/og-card.png', eyebrow: 'MANAS / PERSONAL HOMELAB', title: 'Systems. Research. Engineering.', art: '' },
+  { file: 'public/og-card.png', eyebrow: 'MANAS / MUMBAI', title: "Hi, I'm Manas.", art: '' },
   { file: 'public/figures/ppf-og.png', eyebrow: 'FIELD NOTE / ECONOMICS', title: 'The Zero-Sum Silicon Game', art: 'ppf-system.svg' },
   { file: 'public/figures/rf-og.png', eyebrow: 'FIELD NOTE / RADIO SYSTEMS', title: 'Antenna Theory & Wave Propagation', art: 'rf-link.svg' },
   { file: 'public/figures/recon-og.png', eyebrow: 'FIELD NOTE / RECONNAISSANCE', title: 'Thinking Like Infrastructure', art: 'recon-graph.svg' },
