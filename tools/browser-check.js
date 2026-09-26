@@ -47,6 +47,7 @@ const { chromium } = require('playwright-core');
   assert.match(await page.locator('#ip-result').innerText(), /203\.0\.113\.7/);
   await page.goto('http://127.0.0.1:4177/archive.html');
   assert.equal(await page.locator('.archive-grid .post-card').count(), 4);
+  assert.match(await page.locator('.archive-hero').innerText(), /Electronics Engineering/);
   assert.equal(await page.locator('html').getAttribute('data-theme'), 'light');
   await page.screenshot({ path: path.join(os.tmpdir(), 'manas-light-archive.png') });
   for (const slug of ['PPF-model', 'antenna-wave-propagation', 'thinking-like-infrastructure', 'cron_jobs_to_priviliage_esc']) {
@@ -54,6 +55,7 @@ const { chromium } = require('playwright-core');
     assert.equal(await page.locator('.article-hero-media img').count(), 1, slug);
     assert.equal(await page.locator('.article-hero-media img').evaluate(image => image.complete && image.naturalWidth > 0), true, `${slug} figure failed to load`);
     assert.equal(await page.locator('.simulation .sim-output').count(), 1, slug);
+    assert.match(await page.locator('.article-author').innerText(), /From Mumbai/);
     assert.equal(await page.locator('link[rel=canonical]').count(), 1, slug);
     assert.equal(await page.locator('html').getAttribute('data-theme'), 'light', `${slug} theme persistence`);
     if (slug === 'PPF-model') {
@@ -74,7 +76,10 @@ const { chromium } = require('playwright-core');
       await page.locator('#cron-file').check();
       assert.match(await page.locator('#cron-assessment').innerText(), /Review privilege boundary/);
     }
-    if (slug === 'PPF-model') await page.screenshot({ path: path.join(os.tmpdir(), 'manas-light-article.png') });
+    if (slug === 'PPF-model') {
+      await page.screenshot({ path: path.join(os.tmpdir(), 'manas-light-article.png') });
+      await page.locator('.article-author').screenshot({ path: path.join(os.tmpdir(), 'manas-author.png') });
+    }
   }
   await page.goto('http://127.0.0.1:4177/clix');
   assert.match(await page.title(), /CLIx/);

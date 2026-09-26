@@ -38,3 +38,9 @@ html[data-theme=light],html[data-theme=dark]{--body:'Courier Prime','Courier New
 .article-body,html[data-theme=light] .article-body{line-height:1.85}
 @media(prefers-reduced-motion:reduce){.hero-photo img,.project-visual video{filter:grayscale(1)}}
 @media(max-width:760px){body[data-page=home] .project-card,html[data-theme=light] body[data-page=home] .project-card{display:block;grid-template-columns:none}}
+.article-author{max-width:780px;display:grid;grid-template-columns:145px minmax(0,1fr);gap:24px;border-top:1px solid var(--line);padding:30px 0 8px}
+.article-author .eyebrow{color:var(--red);padding-top:6px}
+.article-author p{font:400 13px/1.8 var(--body);color:var(--text);margin:0 0 14px}
+.article-author strong{font:400 19px var(--display)}
+.article-author a{font:400 11px var(--body);color:var(--red);border-bottom:1px solid var(--red);padding-bottom:4px}
+@media(max-width:760px){.article-author{display:block}.article-author .eyebrow{display:block;margin-bottom:17px}}
