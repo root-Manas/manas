@@ -117,7 +117,7 @@ const server = http.createServer(async (req, res) => {
     let file = path.resolve(root, '.' + (pathname === '/' ? '/index.html' : pathname));
     if (!withinRoot(file) || file.includes(`${path.sep}.git${path.sep}`) || file.includes(`${path.sep}tools${path.sep}`) || file.includes(`${path.sep}node_modules${path.sep}`)) return reply(res, 404, { error: 'Not found.' });
     if (pathname === '/studio/' || pathname === '/studio/index.html') file = path.join(root, 'studio', 'index.html');
-    if (pathname === '/clix/' || pathname === '/clix/index.html') file = path.join(root, 'clix', 'index.html');
+    if (pathname === '/clix' || pathname === '/clix/' || pathname === '/clix/index.html') file = path.join(root, 'clix', 'index.html');
     if (!fs.existsSync(file) || !fs.statSync(file).isFile()) return reply(res, 404, { error: 'Not found.' });
     const type = types[path.extname(file)] || 'application/octet-stream';
     let body = fs.readFileSync(file);

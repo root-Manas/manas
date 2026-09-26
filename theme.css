@@ -1,0 +1,41 @@
+.theme-toggle{display:inline-flex;align-items:center;justify-content:center;min-width:88px;min-height:36px;padding:6px 10px;border:1px solid #777;background:transparent;color:var(--text);font:700 10px var(--mono);letter-spacing:.04em;white-space:nowrap;cursor:pointer}
+.theme-toggle:hover{border-color:var(--red);color:var(--red)}
+html[data-theme=light]{--bg:#f4f2ee;--panel:#fff;--panel2:#eeeae4;--line:#bdb8b1;--soft-line:#d8d3cc;--text:#171717;--muted:#5c5956}
+html[data-theme=light] body{background:#f4f2ee;color:#171717}
+html[data-theme=light] body::before{background-image:linear-gradient(#1515150a 1px,transparent 1px),linear-gradient(90deg,#1515150a 1px,transparent 1px)}
+html[data-theme=light] .site-header{background:#f4f2eef0}
+html[data-theme=light] .brand-glyph{background:#151515;color:#fff}
+html[data-theme=light] .hero.lab-panel{background:radial-gradient(circle at 65% 40%,#ef343414,transparent 38%),#f4f2ee}
+html[data-theme=light] .hero-meta,html[data-theme=light] .hero-footer,html[data-theme=light] .section-top{color:#625e59}
+html[data-theme=light] .hero-copy>p,html[data-theme=light] .section-title-row p,html[data-theme=light] .about-copy>p{color:#514d48}
+html[data-theme=light] .button-outline,html[data-theme=light] .button-ghost{background:#fff;color:#171717;border-color:#7e7973}
+html[data-theme=light] .hero-actions .button-outline{color:#171717}
+html[data-theme=light] .button-outline:hover,html[data-theme=light] .button-ghost:hover{color:var(--red);border-color:var(--red)}
+html[data-theme=light] .hero-deck,html[data-theme=light] .tool-card,html[data-theme=light] .project-card,html[data-theme=light] .post-card,html[data-theme=light] .article-toc,html[data-theme=light] .article-end,html[data-theme=light] .glass-card{background:#fff;color:#171717}
+html[data-theme=light] .project-body h3,html[data-theme=light] .tool-card h3,html[data-theme=light] .post-card h3,html[data-theme=light] .article-body h1,html[data-theme=light] .article-body h2,html[data-theme=light] .article-body h3,html[data-theme=light] .article-body strong,html[data-theme=light] .site-footer strong{color:#161616}
+html[data-theme=light] .tool-card>p,html[data-theme=light] .project-body>p,html[data-theme=light] .post-card p,html[data-theme=light] .archive-hero>p,html[data-theme=light] .article-header>p,html[data-theme=light] .article-end p{color:#5d5954}
+html[data-theme=light] .tool-card input,html[data-theme=light] .tool-card select{background:#f4f2ee;color:#171717;border-color:#aaa}
+html[data-theme=light] .tool-result,html[data-theme=light] .tool-result .record,html[data-theme=light] .article-body pre,html[data-theme=light] .article-body table th,html[data-theme=light] .simulation,html[data-theme=light] .sim-output div,html[data-theme=light] .sim-chart{background:#f4f2ee;color:#171717}
+html[data-theme=light] .tool-result strong,html[data-theme=light] .sim-output strong{color:#171717}
+html[data-theme=light] .article-body{color:#302d2a}
+html[data-theme=light] .article-body code{background:#e9e5df;color:#161616}
+html[data-theme=light] .article-body pre code{background:transparent}
+html[data-theme=light] .article-body blockquote{background:#f9e8e6;color:#302d2a}
+html[data-theme=light] .article-toc a{color:#56514c}
+html[data-theme=light] .article-body th{color:#171717}
+html[data-theme=light] .simulation>p,html[data-theme=light] .sim-note,html[data-theme=light] .sim-control{color:#4f4b46}
+html[data-theme=light] .sim-control input[type=number],html[data-theme=light] .sim-control select{background:#fff;color:#171717}
+html[data-theme=light] .sim-clues label{background:#fff;color:#171717}
+html[data-theme=light] .sim-chart text{fill:#555}
+html[data-theme=light] .site-footer{color:#625e59}
+html[data-theme=light] .studio-sidebar{background:#fff}
+html[data-theme=light] .studio-sidebar .brand-mark{background:#171717;color:#fff}
+html[data-theme=light] .studio-brand,html[data-theme=light] .studio-top h1,html[data-theme=light] .studio-message{color:#171717}
+html[data-theme=light] .post-list button{color:#333}
+html[data-theme=light] .meta-grid label,html[data-theme=light] .summary-label,html[data-theme=light] .sidebar-label,html[data-theme=light] .action-hint{color:#555}
+html[data-theme=light] .meta-grid label small,html[data-theme=light] .post-list small,html[data-theme=light] .sidebar-bottom{color:#666}
+html[data-theme=light] .meta-grid input,html[data-theme=light] .summary-label textarea,html[data-theme=light] .editor-wrap,html[data-theme=light] .story-editor{background:#fff;color:#171717}
+html[data-theme=light] .editor-top{background:#eae6df}
+html[data-theme=light] .toolbar button{color:#333}
+html[data-theme=light] .story-editor pre{background:#eae6df}
+@media(max-width:760px){.site-header .theme-toggle{order:2;margin-left:auto}.site-header .header-contact{margin-left:0}}

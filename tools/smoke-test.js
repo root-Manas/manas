@@ -26,7 +26,7 @@ async function waitForServer() {
     const html = await studio.text();
     const token = html.match(/window\.STUDIO_SESSION='([^']+)'/)?.[1];
     assert.ok(token && token !== '__STUDIO_SESSION__');
-    for (const route of ['/', '/archive.html', '/articles/thinking-like-infrastructure.html', '/clix/', '/vendor/marked.min.js']) {
+    for (const route of ['/', '/archive.html', '/articles/thinking-like-infrastructure.html', '/clix/', '/clix', '/vendor/marked.min.js']) {
       assert.equal((await fetch(base + route)).status, 200, route);
     }
     assert.equal((await fetch(`${base}/.git/config`)).status, 404);

@@ -7,7 +7,8 @@ const targets = [
   { file: 'public/og-card.png', eyebrow: 'MANAS / PERSONAL HOMELAB', title: 'Systems. Research. Engineering.', art: '' },
   { file: 'public/figures/ppf-og.png', eyebrow: 'FIELD NOTE / ECONOMICS', title: 'The Zero-Sum Silicon Game', art: 'ppf-system.svg' },
   { file: 'public/figures/rf-og.png', eyebrow: 'FIELD NOTE / RADIO SYSTEMS', title: 'Antenna Theory & Wave Propagation', art: 'rf-link.svg' },
-  { file: 'public/figures/recon-og.png', eyebrow: 'FIELD NOTE / RECONNAISSANCE', title: 'Thinking Like Infrastructure', art: 'recon-graph.svg' }
+  { file: 'public/figures/recon-og.png', eyebrow: 'FIELD NOTE / RECONNAISSANCE', title: 'Thinking Like Infrastructure', art: 'recon-graph.svg' },
+  { file: 'public/figures/cron-og.png', eyebrow: 'FIELD NOTE / LINUX SECURITY', title: 'Cron Jobs & Privilege Boundaries', art: 'cron-boundary.svg' }
 ];
 (async () => {
   const browser = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });

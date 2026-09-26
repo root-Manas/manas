@@ -4,9 +4,13 @@ const base = 'https://manasraj.vercel.app';
 const routes = [
   ['/', 'PERSONAL HOMELAB'],
   ['/clix/', 'portfolio-theme.css'],
+  ['/clix/style.css', '--'],
+  ['/clix/portfolio-theme.css', '--'],
+  ['/clix/app.js', 'function'],
   ['/articles/PPF-model.html', 'Explore the frontier'],
   ['/articles/antenna-wave-propagation.html', 'Radio link budget'],
   ['/articles/thinking-like-infrastructure.html', 'Evidence-weighting exercise'],
+  ['/articles/cron_jobs_to_priviliage_esc.html', 'Trace the boundary'],
   ['/archive.html', 'FIELD NOTES'],
   ['/sitemap.xml', '/articles/PPF-model.html'],
   ['/feed.xml', 'rss version'],

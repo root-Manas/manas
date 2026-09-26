@@ -36,7 +36,9 @@ function parsePost(source, slug) {
 function articleHtml(post, template) {
   const headings = [];
   const usedIds = new Set();
-  let body = marked.parse(post.content);
+  const leadImage = post.content.match(/^!\[([^\]]*)\]\(([^)]+)\)\s*$/m);
+  const heroFigure = leadImage ? `<figure class="article-hero-media"><img src="${escapeHtml(leadImage[2])}" alt="${escapeHtml(leadImage[1])}" loading="eager"></figure>` : '';
+  let body = marked.parse(leadImage ? post.content.replace(leadImage[0], '') : post.content);
   body = body.replace(/<h([23])>([\s\S]*?)<\/h\1>/g, (_, level, inner) => {
     const title = inner.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
     const base = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'section';
@@ -52,7 +54,7 @@ function articleHtml(post, template) {
   const image = new URL(post.image, origin).href;
   const structuredData = JSON.stringify({ '@context': 'https://schema.org', '@type': 'BlogPosting', headline: post.title, description: post.description, datePublished: post.date, dateModified: post.updated, image, mainEntityOfPage: canonical, author: { '@type': 'Person', name: 'Manas', url: origin }, publisher: { '@type': 'Person', name: 'Manas' } }).replace(/</g, '\\u003c');
   const dateLabel = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' }).format(new Date(`${post.date}T12:00:00Z`));
-  const values = { TITLE: escapeHtml(post.title), DESCRIPTION: escapeHtml(post.description), CANONICAL: canonical, IMAGE: image, DATE: post.date, UPDATED: post.updated, STRUCTURED_DATA: structuredData, DATE_LABEL: dateLabel, READING_MINUTES: post.readingMinutes, TOC: toc, BODY: body };
+  const values = { TITLE: escapeHtml(post.title), DESCRIPTION: escapeHtml(post.description), CANONICAL: canonical, IMAGE: image, DATE: post.date, UPDATED: post.updated, STRUCTURED_DATA: structuredData, DATE_LABEL: dateLabel, READING_MINUTES: post.readingMinutes, HERO_FIGURE: heroFigure, TOC: toc, BODY: body };
   return template.replace(/%%([A-Z_]+)%%/g, (_, key) => String(values[key] ?? ''));
 }
 

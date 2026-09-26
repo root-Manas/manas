@@ -68,8 +68,21 @@ function initRecon(root) {
   update();
 }
 
+function initCron(root) {
+  root.querySelector('.sim-ui').innerHTML = `<div class="sim-clues"><label><input type="checkbox" id="cron-root" checked>Scheduled command runs as root</label><label><input type="checkbox" id="cron-file">Lower-trust account can edit the script file</label><label><input type="checkbox" id="cron-parent">Lower-trust account can replace a path component</label><label><input type="checkbox" id="cron-helper">Script loads a lower-trust helper or PATH entry</label></div><div class="sim-output" style="margin-top:14px">${metric('EXECUTION IDENTITY', 'cron-identity')}${metric('BOUNDARY ASSESSMENT', 'cron-assessment')}</div><p class="sim-note">A static model of influence, not a vulnerability scanner. Actual permissions, ACLs, mount policy, and timing still need inspection.</p>`;
+  const update = () => {
+    const rootJob = document.getElementById('cron-root').checked;
+    const influence = ['cron-file', 'cron-parent', 'cron-helper'].some(id => document.getElementById(id).checked);
+    text('cron-identity', rootJob ? 'root' : 'unprivileged');
+    text('cron-assessment', rootJob && influence ? 'Review privilege boundary' : influence ? 'Code can be influenced' : 'No influence shown');
+  };
+  root.querySelectorAll('input').forEach(input => input.addEventListener('change', update));
+  update();
+}
+
 document.querySelectorAll('[data-sim]').forEach(root => {
   if (root.dataset.sim === 'ppf') initPpf(root);
   if (root.dataset.sim === 'rf') initRf(root);
   if (root.dataset.sim === 'recon') initRecon(root);
+  if (root.dataset.sim === 'cron') initCron(root);
 });

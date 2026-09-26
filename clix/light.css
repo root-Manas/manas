@@ -1,0 +1,22 @@
+.theme-toggle{min-width:90px;padding:8px;border:1px solid #777;background:transparent;color:#eee;font:700 10px monospace;cursor:pointer}
+.theme-toggle:hover{border-color:#ef3434;color:#ef3434}
+html[data-theme=light]{--bg:#f4f2ee;--panel:#fff;--ink:#171717;--muted:#5b5752;--line:#c5bfb8;--paper:#fff}
+html[data-theme=light] body{background-color:#f4f2ee;color:#171717;background-image:linear-gradient(#1515150a 1px,transparent 1px),linear-gradient(90deg,#1515150a 1px,transparent 1px)}
+html[data-theme=light] header{background:#f4f2eef0;border-bottom-color:#bdb8b1}
+html[data-theme=light] .brand{color:#171717}html[data-theme=light] nav a,html[data-theme=light] nav button,html[data-theme=light] .online,html[data-theme=light] .inventory,html[data-theme=light] .resultbar,html[data-theme=light] footer{color:#56514c}
+html[data-theme=light] nav .navactive{color:#fff}html[data-theme=light] .theme-toggle{color:#171717}
+html[data-theme=light] .inventory span{color:#171717}
+html[data-theme=light] .topics button,html[data-theme=light] .chips button,html[data-theme=light] select{background:#fff;color:#171717;border-color:#bbb}
+html[data-theme=light] .topics .active,html[data-theme=light] .topics button[data-topic=research].active,html[data-theme=light] .topics button[data-topic=opsec].active{background:#ef3434;color:#fff;border-color:#ef3434}
+html[data-theme=light] .chips .active{background:#fff0ee;color:#171717;border-color:#ef3434}
+html[data-theme=light] aside{background:#fff;color:#171717;border:1px solid #ddd}
+html[data-theme=light] .card,html[data-theme=light] .guidecard{background:#fff;color:#171717;border-color:#bdb8b1}
+html[data-theme=light] .card:hover{background:#fff7f6;border-color:#ef3434}
+html[data-theme=light] .command,html[data-theme=light] .guidecard h2{color:#171717}
+html[data-theme=light] .platform,html[data-theme=light] .card p,html[data-theme=light] .card-foot,html[data-theme=light] .guidecard p,html[data-theme=light] .pagination>span{color:#5b5752}
+html[data-theme=light] .snippetrow,html[data-theme=light] .codebox{background:#f4f2ee;border-color:#c5bfb8}
+html[data-theme=light] .snippet,html[data-theme=light] .codebox code{color:#171717}
+html[data-theme=light] .copy-icon,html[data-theme=light] .commandrow>.copy-icon{background:#fff;color:#171717;border-color:#999}
+html[data-theme=light] dialog{background:#fff;color:#171717}html[data-theme=light] dialog p{color:#555}
+html[data-theme=light] .portfolio-return{background:#fff;color:#171717}
+@media(max-width:700px){header .theme-toggle{order:2}}

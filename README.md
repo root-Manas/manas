@@ -1,10 +1,10 @@
 # Manas
 
-A black, white and red cybercore portfolio and personal homelab. The site includes an IP check, DNS lookup and local SHA-256 tool. The IP and DNS tools only call public services when clicked. Animations use a vendored Anime.js bundle and respect reduced motion settings.
+A black, white and red cybercore portfolio and personal homelab with an animated carousel of live work. A light-mode switch carries across the portfolio, articles, CLIx and the local editor. The site includes an IP check, DNS lookup and local SHA-256 tool. The IP and DNS tools only call public services when clicked. Animations use a vendored Anime.js bundle and respect reduced motion settings.
 
 The CLIx project is included at `/clix/` in this repository. It is served by the **same Vercel deployment** as the portfolio; the portfolio links to it directly. The original CLIx source remains at `D:/Projects/CLIx` for independent development. To refresh the hosted copy, copy its public HTML, CSS, JavaScript and data files into `clix/`, then deploy this repository.
 
-Posts live in `blog/*.md`. `node tools/build-blog.js` generates `blog/index.json`, static article pages in `articles/`, the archive, sitemap and RSS feed. The three research articles include original diagrams and interactive simulations.
+Posts live in `blog/*.md`. `node tools/build-blog.js` generates `blog/index.json`, static article pages in `articles/`, the archive, sitemap and RSS feed. All four articles include original diagrams and interactive simulations.
 
 ## Blog Studio
 

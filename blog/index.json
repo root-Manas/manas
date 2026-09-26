@@ -11,7 +11,7 @@
       "methodology"
     ],
     "image": "/public/figures/recon-og.png",
-    "readingMinutes": 7
+    "readingMinutes": 13
   },
   {
     "slug": "antenna-wave-propagation",
@@ -25,7 +25,7 @@
       "link budget"
     ],
     "image": "/public/figures/rf-og.png",
-    "readingMinutes": 5
+    "readingMinutes": 11
   },
   {
     "slug": "PPF-model",
@@ -39,20 +39,21 @@
       "systems modeling"
     ],
     "image": "/public/figures/ppf-og.png",
-    "readingMinutes": 6
+    "readingMinutes": 11
   },
   {
     "slug": "cron_jobs_to_priviliage_esc",
     "title": "Cron Jobs and Privilege Escalation: Mechanics and Mitigation",
-    "description": "An analysis of misconfigured cron jobs as a vector for privilege escalation in Linux environments.",
+    "description": "A close look at cron's privilege boundary: path resolution, file ownership, shell behavior, race conditions, safe auditing, and how to design jobs that do not inherit writable code.",
     "date": "2024-05-09",
-    "updated": "2024-05-09",
+    "updated": "2026-09-26",
     "tags": [
       "linux",
       "privilege escalation",
-      "security"
+      "cron",
+      "hardening"
     ],
-    "image": "/public/og-card.png",
-    "readingMinutes": 2
+    "image": "/public/figures/cron-og.png",
+    "readingMinutes": 11
   }
 ]

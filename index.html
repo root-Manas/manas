@@ -4,15 +4,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#090909">
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('manas-theme')||'dark'}catch{}</script>
   <meta name="description" content="Manas is a security researcher and engineer. Explore research notes, WebDorks, CLIx, and a small browser homelab for IP, DNS, and hashing.">
   <link rel="canonical" href="https://manasraj.vercel.app/">
   <meta property="og:type" content="website"><meta property="og:title" content="Manas — Security Research & Engineering"><meta property="og:description" content="Tools, field notes, and experiments from a personal security homelab."><meta property="og:url" content="https://manasraj.vercel.app/"><meta property="og:image" content="https://manasraj.vercel.app/public/og-card.png">
   <meta name="twitter:card" content="summary_large_image">
   <title>Manas — Security Research & Engineering</title>
-  <link rel="icon" href="favicon.png" type="image/png"><link rel="manifest" href="public/manifest.json"><link rel="alternate" type="application/rss+xml" title="Manas field notes" href="feed.xml">
+  <link rel="icon" href="favicon.png?v=2" type="image/png"><link rel="manifest" href="public/manifest.json"><link rel="alternate" type="application/rss+xml" title="Manas field notes" href="feed.xml">
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=7">
+  <link rel="stylesheet" href="motion.css?v=1">
+  <link rel="stylesheet" href="theme.css?v=1"><script src="theme.js?v=1" defer></script>
   <script src="vendor/anime.umd.min.js" defer></script><script src="site.js?v=7" defer></script><script src="lab.js?v=7" defer></script><script src="blog.js?v=7" defer></script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Manas","url":"https://manasraj.vercel.app/","sameAs":["https://github.com/root-Manas","https://www.linkedin.com/in/manasraj-singh"],"jobTitle":"Security researcher and engineer"}</script>
 </head>
@@ -29,8 +32,16 @@
       <section class="hero lab-panel" aria-labelledby="hero-title">
         <div class="hero-meta mono"><span>NODE_01 / PERSONAL HOMELAB</span><span>SECURITY RESEARCH · ENGINEERING</span></div>
         <div class="hero-grid">
-          <div class="hero-copy"><div class="eyebrow"><span class="red-rule"></span> SIGNAL / MANAS</div><h1 id="hero-title">Understand<br>the system<span class="red">.</span><br>Change the<br>outcome<span class="red">.</span></h1><p>I’m Manas. I investigate how systems behave, build practical tools, and document what survives contact with reality.</p><div class="hero-actions"><a class="button button-red" href="#work">Explore projects <span>↗</span></a><a class="button button-outline" href="archive.html">Read field notes <span>→</span></a></div></div>
-          <div class="hero-console" aria-label="Animated system map"><div class="console-top mono"><span>LAB / SYSTEM MAP</span><span class="console-state"><i></i> ONLINE</span></div><div class="network-map" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="scan-line"></div><div class="map-center"><span>M/</span><small>CORE</small></div><span class="map-node node-a">RESEARCH</span><span class="map-node node-b">BUILD</span><span class="map-node node-c">VERIFY</span><span class="map-node node-d">DOCUMENT</span><div class="map-cross cross-a">+</div><div class="map-cross cross-b">+</div></div><div class="console-log mono"><span>&gt; INIT SYSTEM OBSERVER</span><span>&gt; MAP ACTIVE SURFACES</span><span class="red">&gt; CURIOSITY: ONLINE_</span></div></div>
+          <div class="hero-copy"><div class="eyebrow"><span class="red-rule"></span> MANAS / SECURITY RESEARCH</div><h1 id="hero-title">Signals<br>over noise<span class="red">.</span></h1><p>Tools in motion. Research you can test. Notes from the workbench.</p><div class="hero-actions"><a class="button button-red" href="#work">Explore projects <span>↗</span></a><a class="button button-outline" href="#lab">Open the lab <span>→</span></a></div><div class="hero-quick mono"><a href="clix/">OPEN CLIx ↗</a><a href="archive.html">READ THE NOTES ↗</a></div></div>
+          <div class="hero-deck" aria-label="Featured work carousel">
+            <div class="deck-head mono"><span>LIVE FEED / SELECTED WORK</span><span class="deck-live"><i></i> 03 CHANNELS</span></div>
+            <div class="deck-window">
+              <a class="deck-slide is-active" href="https://webdorks.vercel.app/" target="_blank" rel="noopener noreferrer" aria-label="Open WebDorks"><video autoplay muted loop playsinline preload="metadata" poster="public/assets/webdorks-poster.png"><source src="public/assets/webdorks.webm" type="video/webm"></video><span class="deck-overlay"><small>01 / SEARCH INTELLIGENCE</small><strong>WebDorks ↗</strong><span>Current build in action</span></span></a>
+              <a class="deck-slide" href="clix/" aria-label="Open CLIx"><img src="public/assets/clix-preview.png" alt="CLIx command catalogue showing searchable tools and examples" loading="lazy"><span class="deck-overlay"><small>02 / COMMAND REFERENCE</small><strong>CLIx ↗</strong><span>7,782 entries in one workspace</span></span></a>
+              <a class="deck-slide" href="archive.html" aria-label="Read field notes"><img src="public/figures/rf-og.png" alt="Radio link budget figure from a technical field note" loading="lazy"><span class="deck-overlay"><small>03 / FIELD NOTES</small><strong>Research ↗</strong><span>Models you can test in the browser</span></span></a>
+            </div>
+            <div class="deck-controls mono"><button class="deck-tab is-active" type="button" data-slide="0" aria-label="Show WebDorks">01 WEBDORKS</button><button class="deck-tab" type="button" data-slide="1" aria-label="Show CLIx">02 CLIx</button><button class="deck-tab" type="button" data-slide="2" aria-label="Show articles">03 NOTES</button></div><div class="deck-progress"><span></span></div>
+          </div>
         </div>
         <div class="hero-footer mono"><span>SCROLL TO INSPECT ↓</span><span>INDIA / UTC+05:30</span><span>BUILD. BREAK. LEARN.</span></div>
       </section>
