@@ -2,6 +2,7 @@
 title: "Infrastructure Patterns and Recon: How Systems Betray Themselves"
 description: "Understanding attack surface through operational requirements and organizational constraints rather than tooling."
 pubDate: "February 11 2026"
+tags: "recon, infrastructure, methodology"
 featured: true
 ---
 

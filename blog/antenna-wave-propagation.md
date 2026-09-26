@@ -2,6 +2,7 @@
 title: "Antenna Theory and Wave Propagation: Fundamentals for Security Researchers"
 description: "A dive into the physics of RF communications, antenna design, and the implications for wireless security and signals intelligence."
 pubDate: "June 05 2024"
+tags: "RF, wireless, signals"
 featured: true
 ---
 

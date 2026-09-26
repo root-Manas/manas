@@ -2,6 +2,7 @@
 title: "Cron Jobs and Privilege Escalation: Mechanics and Mitigation"
 description: "An analysis of misconfigured cron jobs as a vector for privilege escalation in Linux environments."
 pubDate: "May 09 2024"
+tags: "linux, privilege escalation, security"
 featured: true
 ---
 

@@ -1,62 +1,9 @@
-# How to Add Blog Posts
+# Writing and publishing
 
-## Quick Steps
+1. Double-click `start-blog-studio.cmd` in this folder.
+2. Choose **New article** or open an existing article from the left.
+3. Write in the large visual editor. Use the toolbar for headings, lists, links and code.
+4. Choose **Save draft** to keep the post on this computer, or **Preview** to see it on the local site.
+5. Choose **Publish to site** when ready. This saves, commits and pushes the post to `main`.
 
-1. **Create a markdown file** in the `/blog` folder:
-   ```
-   blog/your-post-slug.md
-   ```
-
-2. **Add your post** to the `POSTS` array in `blog.js`:
-   ```javascript
-   {
-       slug: 'your-post-slug',      // Must match your .md filename (without .md)
-       title: 'Your Post Title',
-       date: '2025-12-15',          // YYYY-MM-DD format
-       description: 'Brief description shown in the list'
-   }
-   ```
-
-3. **Refresh the page** — your post will appear in the Blog section.
-
----
-
-## Example
-
-### Step 1: Create `blog/osint-techniques.md`
-```markdown
-# OSINT Techniques for Security Research
-
-Introduction paragraph...
-
-## Section 1
-Content here...
-
-## Conclusion
-Wrap up...
-```
-
-### Step 2: Edit `blog.js`
-```javascript
-const POSTS = [
-    {
-        slug: 'getting-started',
-        title: 'Hello World - Getting Started',
-        date: '2025-12-15',
-        description: 'An introduction to my journey...'
-    },
-    {
-        slug: 'osint-techniques',  // NEW POST
-        title: 'OSINT Techniques for Security Research',
-        date: '2025-12-16',
-        description: 'Exploring open-source intelligence methods.'
-    }
-];
-```
-
----
-
-## Notes
-- Posts are sorted by date (newest first)
-- Clicking a post opens the raw `.md` file
-- Use standard Markdown formatting in your posts
+The first time you publish, Git may ask you to sign in. If publishing fails, the draft remains saved locally. The live site's deployment follows the repository's Vercel configuration.

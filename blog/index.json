@@ -1,0 +1,50 @@
+[
+  {
+    "slug": "thinking-like-infrastructure",
+    "title": "Infrastructure Patterns and Recon: How Systems Betray Themselves",
+    "description": "Understanding attack surface through operational requirements and organizational constraints rather than tooling.",
+    "date": "2026-02-11",
+    "tags": [
+      "recon",
+      "infrastructure",
+      "methodology"
+    ],
+    "readingMinutes": 7
+  },
+  {
+    "slug": "antenna-wave-propagation",
+    "title": "Antenna Theory and Wave Propagation: Fundamentals for Security Researchers",
+    "description": "A dive into the physics of RF communications, antenna design, and the implications for wireless security and signals intelligence.",
+    "date": "2024-06-05",
+    "tags": [
+      "RF",
+      "wireless",
+      "signals"
+    ],
+    "readingMinutes": 4
+  },
+  {
+    "slug": "PPF-model",
+    "title": "The Zero-Sum Silicon Game: Analyzing US Tech Dominance via the PPF Model",
+    "description": "An economic analysis of the trade-offs between semiconductor manufacturing and software development using the Production Possibilities Frontier framework.",
+    "date": "2024-06-01",
+    "tags": [
+      "economics",
+      "semiconductors",
+      "analysis"
+    ],
+    "readingMinutes": 3
+  },
+  {
+    "slug": "cron_jobs_to_priviliage_esc",
+    "title": "Cron Jobs and Privilege Escalation: Mechanics and Mitigation",
+    "description": "An analysis of misconfigured cron jobs as a vector for privilege escalation in Linux environments.",
+    "date": "2024-05-09",
+    "tags": [
+      "linux",
+      "privilege escalation",
+      "security"
+    ],
+    "readingMinutes": 2
+  }
+]

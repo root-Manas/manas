@@ -2,6 +2,7 @@
 title: "The Zero-Sum Silicon Game: Analyzing US Tech Dominance via the PPF Model"
 description: "An economic analysis of the trade-offs between semiconductor manufacturing and software development using the Production Possibilities Frontier framework."
 pubDate: "June 01 2024"
+tags: "economics, semiconductors, analysis"
 featured: true
 ---
 
