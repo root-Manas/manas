@@ -13,8 +13,8 @@
   <link rel="icon" href="favicon.png?v=2" type="image/png"><link rel="manifest" href="public/manifest.json"><link rel="alternate" type="application/rss+xml" title="Manas field notes" href="feed.xml">
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=7"><link rel="stylesheet" href="motion.css?v=1"><link rel="stylesheet" href="personal.css?v=3"><link rel="stylesheet" href="theme.css?v=1">
-  <script src="theme.js?v=1" defer></script><script src="vendor/anime.umd.min.js" defer></script><script src="site.js?v=8" defer></script><script src="research-map.js?v=1" defer></script><script src="lab.js?v=7" defer></script><script src="blog.js?v=7" defer></script>
+  <link rel="stylesheet" href="styles.css?v=7"><link rel="stylesheet" href="motion.css?v=1"><link rel="stylesheet" href="personal.css?v=3"><link rel="stylesheet" href="theme.css?v=1"><link rel="stylesheet" href="scope.css?v=1">
+  <script src="theme.js?v=1" defer></script><script src="vendor/anime.umd.min.js" defer></script><script src="site.js?v=8" defer></script><script src="research-map.js?v=2" defer></script><script src="lab.js?v=7" defer></script><script src="blog.js?v=7" defer></script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Manas","url":"https://manasraj.vercel.app/","sameAs":["https://github.com/root-Manas","https://www.linkedin.com/in/manasraj-singh"],"jobTitle":"Security researcher"}</script>
 </head>
 <body data-page="home">
@@ -39,24 +39,26 @@
             <div class="hero-quick mono"><a href="https://github.com/root-Manas" target="_blank" rel="noopener noreferrer">GITHUB ↗</a><a href="archive.html">WRITING ↗</a></div>
           </div>
           <div class="research-map" aria-label="Explore Manas's projects and tools">
-            <div class="research-map-head mono"><span>MY WORK / 04 PLACES TO START</span><span class="map-status"><i></i> LIVE MAP</span></div>
+            <div class="research-map-head mono"><span>EXPLORE MY WORK</span><span class="map-status"><i></i> 01 / 04</span></div>
             <div class="research-map-stage">
-              <svg class="map-graphic" viewBox="0 0 600 450" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
-                <defs><pattern id="map-dots" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="currentColor" opacity=".23"/></pattern></defs>
-                <rect width="600" height="450" fill="url(#map-dots)"/>
-                <g class="map-orbit"><circle cx="300" cy="225" r="178"/><circle cx="300" cy="225" r="145"/><circle cx="300" cy="225" r="112"/></g>
+              <svg class="map-graphic" viewBox="0 0 700 700" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
+                <defs><radialGradient id="scope-glow"><stop offset="0" stop-color="#ef3434" stop-opacity=".18"/><stop offset="1" stop-color="#ef3434" stop-opacity="0"/></radialGradient></defs>
+                <circle cx="350" cy="350" r="315" fill="url(#scope-glow)"/>
+                <g class="scope-orbits"><circle cx="350" cy="350" r="280"/><circle cx="350" cy="350" r="249"/><circle cx="350" cy="350" r="216"/><circle cx="350" cy="350" r="151"/></g>
+                <g class="scope-arcs"><circle cx="350" cy="350" r="275"/><circle cx="350" cy="350" r="265"/><circle cx="350" cy="350" r="227"/></g>
                 <g class="map-ticks" id="map-ticks"></g>
-                <g class="map-links"><path data-link="webdorks" d="M300 225 L452 112"/><path data-link="clix" d="M300 225 L450 335"/><path data-link="writing" d="M300 225 L148 337"/><path data-link="ip" d="M300 225 L148 112"/></g>
-                <g class="map-sweep"><path d="M300 225 L300 40"/><circle cx="300" cy="43" r="5"/></g>
-                <circle class="map-hub-ring" cx="300" cy="225" r="89"/>
+                <g class="scope-bars" id="scope-bars"></g>
+                <g class="scope-dots" id="scope-dots"></g>
+                <g class="map-sweep"><path d="M350 350 L350 73"/><circle cx="350" cy="74" r="6"/></g>
               </svg>
+              <div class="map-focus" aria-live="polite"><span class="map-focus-index mono">01 / WEB SEARCH</span><strong class="map-focus-name">WebDorks</strong><p class="map-focus-copy">Search queries grouped by task and engine.</p><a class="map-focus-link mono" href="https://webdorks.vercel.app/" target="_blank" rel="noopener noreferrer">OPEN PROJECT ↗</a></div>
+            </div>
+            <div class="research-map-nav" aria-label="Choose a project or tool">
               <button class="map-node is-active" type="button" data-map="webdorks" aria-pressed="true"><span>01</span>WebDorks</button>
               <button class="map-node" type="button" data-map="clix" aria-pressed="false"><span>02</span>CLIx</button>
               <button class="map-node" type="button" data-map="writing" aria-pressed="false"><span>03</span>Writing</button>
               <button class="map-node" type="button" data-map="ip" aria-pressed="false"><span>04</span>IP check</button>
-              <div class="map-focus" aria-live="polite"><span class="map-focus-index mono">01 / WEB SEARCH</span><strong class="map-focus-name">WebDorks</strong><p class="map-focus-copy">Search queries grouped by task and engine.</p><a class="map-focus-link mono" href="https://webdorks.vercel.app/" target="_blank" rel="noopener noreferrer">OPEN PROJECT ↗</a></div>
             </div>
-            <div class="research-map-foot mono"><span>SELECT A POINT</span><span>WEB · CLI · NOTES · IP</span></div>
           </div>
         </div>
       </section>
