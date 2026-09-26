@@ -1,6 +1,6 @@
 # Writing and publishing
 
-1. Double-click `start-blog-studio.cmd` in this folder.
+1. Double-click **Blog Studio** on the Windows desktop, or `start-blog-studio.cmd` in this folder.
 2. Choose **New article** or open an existing article from the left.
 3. Write in the large visual editor. Use the toolbar for headings, lists, links, code and image uploads. PNG, JPEG and WebP images up to 4 MB are supported; the editor asks for a description.
 4. Choose **Save draft** to keep the post on this computer, or **Preview** to see it on the local site.

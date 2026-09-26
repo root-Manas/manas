@@ -8,7 +8,7 @@ Posts live in `blog/*.md`. `node tools/build-blog.js` generates `blog/index.json
 
 ## Blog Studio
 
-On Windows, double-click `start-blog-studio.cmd`. It starts a private server on `127.0.0.1:4177` and opens the editor in your browser. Node.js and Git must be installed. To stop it, close the console window.
+On Windows, double-click the **Blog Studio** desktop shortcut or `start-blog-studio.cmd`. It starts a private server on `127.0.0.1:4177` in the background and opens the editor in your browser. Clicking it again reopens the editor without starting a second server. Node.js and Git must be installed. To stop the background server, end the `node.exe` process running `tools/studio-server.js` in Task Manager.
 
 The editor lets you write visually, upload images, open and edit existing posts, save locally, preview, and publish with a button. Publish commits the post, its uploaded images and generated public pages to `main`, then pushes to `origin`. Your existing Git authentication must be set up. The button reports an error if the remote branch has moved or Git authentication fails. Vercel deploys the portfolio and CLIx from this one repository.
 
