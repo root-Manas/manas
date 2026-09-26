@@ -1,14 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Special+Elite&display=swap');
 /* CLIx keeps its dense command UI, with the portfolio's paper and type. */
-body,button,input,select,textarea{font-family:'Space Mono',Consolas,monospace}
+:root{--mono:'Courier Prime','Courier New',monospace;--display:'Special Elite','Courier Prime',monospace}
+body,button,input,select,textarea{font-family:'Courier Prime','Courier New',monospace}
 html[data-theme=light] body{background:#f7f5f0;color:#24231f;background-image:none}
 html[data-theme=dark] body{background:#171715;color:#e9e6dc;background-image:none}
 body:before{opacity:.15}
 header,html[data-theme=light] header{background:#f7f5f0;border-color:#c9c5bd}
 html[data-theme=dark] header{background:#171715;border-color:#55534d}
-.brand,h1,h2,h3,.card h3{font-family:'Space Mono',Consolas,monospace;font-weight:400;letter-spacing:-.06em}
+.brand,h1,h2,h3,.card h3{font-family:'Special Elite','Courier Prime',monospace;font-weight:400;letter-spacing:-.035em}
 .card,html[data-theme=light] .card{border-radius:0;box-shadow:none;background:#f7f5f0;border-color:#c9c5bd}
 html[data-theme=dark] .card{background:#1d1d1a;border-color:#55534d}
 .card:hover{transform:none}
 input,select,button{border-radius:0}
-.portfolio-return{font-family:'Space Mono',Consolas,monospace;text-transform:lowercase}
-.theme-toggle{font-family:'Space Mono',Consolas,monospace;font-weight:400;text-transform:lowercase}
+.portfolio-return{font-family:'Courier Prime','Courier New',monospace;text-transform:lowercase}
+.theme-toggle{font-family:'Courier Prime','Courier New',monospace;font-weight:400;text-transform:lowercase}
