@@ -13,8 +13,8 @@
   <link rel="icon" href="favicon.png?v=2" type="image/png"><link rel="manifest" href="public/manifest.json"><link rel="alternate" type="application/rss+xml" title="Manas field notes" href="feed.xml">
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=7"><link rel="stylesheet" href="motion.css?v=1"><link rel="stylesheet" href="personal.css?v=1"><link rel="stylesheet" href="theme.css?v=1">
-  <script src="theme.js?v=1" defer></script><script src="vendor/anime.umd.min.js" defer></script><script src="site.js?v=7" defer></script><script src="lab.js?v=7" defer></script><script src="blog.js?v=7" defer></script>
+  <link rel="stylesheet" href="styles.css?v=7"><link rel="stylesheet" href="motion.css?v=1"><link rel="stylesheet" href="personal.css?v=2"><link rel="stylesheet" href="theme.css?v=1">
+  <script src="theme.js?v=1" defer></script><script src="vendor/anime.umd.min.js" defer></script><script src="site.js?v=7" defer></script><script src="scene3d.js?v=1" defer></script><script src="lab.js?v=7" defer></script><script src="blog.js?v=7" defer></script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Manas","url":"https://manasraj.vercel.app/","sameAs":["https://github.com/root-Manas","https://www.linkedin.com/in/manasraj-singh"],"jobTitle":"Security researcher"}</script>
 </head>
 <body data-page="home">
@@ -38,14 +38,10 @@
             <div class="hero-actions"><a class="button button-red" href="#work">See my work <span>↗</span></a><a class="button button-outline" href="#about">More about me <span>→</span></a></div>
             <div class="hero-quick mono"><a href="https://github.com/root-Manas" target="_blank" rel="noopener noreferrer">GITHUB ↗</a><a href="archive.html">WRITING ↗</a></div>
           </div>
-          <div class="hero-deck" aria-label="A few things I've made">
-            <div class="deck-head mono"><span>A FEW THINGS I'VE MADE</span><span class="deck-live"><i></i> TAKE A LOOK</span></div>
-            <div class="deck-window">
-              <a class="deck-slide is-active" href="https://webdorks.vercel.app/" target="_blank" rel="noopener noreferrer" aria-label="Open WebDorks"><video autoplay muted loop playsinline preload="metadata" poster="public/assets/webdorks-poster.png"><source src="public/assets/webdorks.webm" type="video/webm"></video><span class="deck-overlay"><small>01 / WEB SEARCH</small><strong>WebDorks ↗</strong><span>Search queries in one place</span></span></a>
-              <a class="deck-slide" href="clix/" aria-label="Open CLIx"><img src="public/assets/clix-preview.png" alt="CLIx command catalogue showing searchable tools and examples" loading="lazy"><span class="deck-overlay"><small>02 / COMMANDS</small><strong>CLIx ↗</strong><span>A searchable command reference</span></span></a>
-              <a class="deck-slide" href="archive.html" aria-label="Read my writing"><img src="public/figures/rf-og.png" alt="Radio link budget figure from a technical article" loading="lazy"><span class="deck-overlay"><small>03 / WRITING</small><strong>Notes ↗</strong><span>What I've been learning</span></span></a>
-            </div>
-            <div class="deck-controls mono"><button class="deck-tab is-active" type="button" data-slide="0" aria-label="Show WebDorks">01 WEBDORKS</button><button class="deck-tab" type="button" data-slide="1" aria-label="Show CLIx">02 CLIx</button><button class="deck-tab" type="button" data-slide="2" aria-label="Show writing">03 WRITING</button></div><div class="deck-progress"><span></span></div>
+          <div class="identity-scene" aria-label="Interactive three dimensional Manas monogram">
+            <div class="identity-scene-meta mono"><span>MANAS / 001</span><span>DRAG TO ROTATE</span></div>
+            <div class="identity-scene-frame"><canvas id="identity-canvas" role="img" aria-label="A rotating three dimensional letter M surrounded by orbital lines"></canvas><span class="identity-scene-fallback" aria-hidden="true">M<span>/</span></span></div>
+            <div class="identity-scene-foot mono"><span>MUMBAI, INDIA</span><span>SECURITY / CODE</span></div>
           </div>
         </div>
       </section>

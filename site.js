@@ -13,7 +13,7 @@ if (!reducedMotion && window.anime?.animate) {
   animate('.hero-meta span', { opacity: [0, 1], translateY: [12, 0], duration: 520, delay: stagger(90), ease: 'out(3)' });
   animate('.hero-copy .eyebrow, .hero-copy h1, .hero-copy p, .hero-actions', { opacity: [0, 1], translateY: [24, 0], duration: 780, delay: stagger(105, { start: 110 }), ease: 'out(3)' });
   animate('.hero-portrait', { opacity: [0, 1], scale: [.86, 1], rotate: [-6, 0], duration: 850, delay: 120, ease: 'out(3)' });
-  animate('.hero-deck', { opacity: [0, 1], translateX: [24, 0], duration: 850, delay: 190, ease: 'out(3)' });
+  animate('.identity-scene', { opacity: [0, 1], translateX: [24, 0], duration: 850, delay: 190, ease: 'out(3)' });
   animate('.pulse-dot, .console-state i, .section-status i', { opacity: [1, .35], duration: 1300, alternate: true, loop: true, ease: 'inOut(2)' });
   const seen = new WeakSet();
   const observer = new IntersectionObserver(entries => {
@@ -30,45 +30,4 @@ if (!reducedMotion && window.anime?.animate) {
       if (node.nodeType === 1 && node.matches?.('.post-card')) observer.observe(node);
     }
   }).observe(document.body, { childList: true, subtree: true });
-}
-
-const deck = document.querySelector('.hero-deck');
-if (deck) {
-  const slides = [...deck.querySelectorAll('.deck-slide')];
-  const tabs = [...deck.querySelectorAll('.deck-tab')];
-  const progress = deck.querySelector('.deck-progress span');
-  let active = 0;
-  let timer;
-  let paused = false;
-  const schedule = () => {
-    clearTimeout(timer);
-    progress.style.transition = 'none';
-    progress.style.width = '0';
-    if (reducedMotion || paused || document.hidden) return;
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      progress.style.transition = 'width 7s linear';
-      progress.style.width = '100%';
-    }));
-    timer = setTimeout(() => show((active + 1) % slides.length), 7000);
-  };
-  const show = index => {
-    active = index;
-    slides.forEach((slide, i) => {
-      slide.classList.toggle('is-active', i === index);
-      slide.querySelector('video')?.[i === index ? 'play' : 'pause']?.();
-    });
-    tabs.forEach((tab, i) => {
-      tab.classList.toggle('is-active', i === index);
-      tab.setAttribute('aria-pressed', String(i === index));
-    });
-    if (!reducedMotion && window.anime?.animate) window.anime.animate(slides[index].querySelector('.deck-overlay'), { opacity: [0, 1], translateY: [16, 0], duration: 520, ease: 'out(3)' });
-    schedule();
-  };
-  tabs.forEach((tab, i) => tab.addEventListener('click', () => show(i)));
-  deck.addEventListener('mouseenter', () => { paused = true; clearTimeout(timer); progress.style.transition = 'none'; });
-  deck.addEventListener('mouseleave', () => { paused = false; schedule(); });
-  deck.addEventListener('focusin', () => { paused = true; clearTimeout(timer); });
-  deck.addEventListener('focusout', event => { if (!deck.contains(event.relatedTarget)) { paused = false; schedule(); } });
-  document.addEventListener('visibilitychange', schedule);
-  show(0);
 }
