@@ -1,244 +1,86 @@
 ---
 title: "Infrastructure Patterns and Recon: How Systems Betray Themselves"
-description: "Understanding attack surface through operational requirements and organizational constraints rather than tooling."
+description: "A technical method for turning DNS, certificate logs, code, and client-side clues into testable infrastructure hypotheses without confusing correlation with ownership."
 pubDate: "February 11 2026"
+updated: "2026-09-26"
+image: "/public/figures/recon-og.png"
 tags: "recon, infrastructure, methodology"
-featured: true
 ---
 
-Reconnaissance efforts frequently focus on tool selection rather than understanding the systemic constraints that determine infrastructure layout. While enumeration techniques have value, the more efficient approach is identifying why a given asset exists and what that reveals about the broader architecture.
+Reconnaissance is often described as collecting names and IP addresses. The difficult part comes afterward: deciding what the observations mean. An unfamiliar hostname can be a production service, an abandoned alias, a vendor tenant, or a historical artifact. A certificate can reveal a name without proving that a service is still deployed. A shared IP can connect unrelated customers. Good recon therefore looks less like a list and more like an **evidence graph**.
 
-Infrastructure emerges from operational requirements, not arbitrary decisions. Budget constraints, compliance mandates, vendor dependencies, and legacy migrations impose predictable patterns. Recognizing these patterns transforms discovery from brute force to inference.
+This method is for systems within an authorized scope. The examples use fictional `acme.example` names and synthetic observations. Passive clues can guide a review; they do not expand the permission granted by a program or asset owner.
 
-## Business Requirements Dictate Architecture
+![Fictional infrastructure evidence graph linking DNS, CT, repositories, and client code](/public/figures/recon-graph.svg)
 
-Consider a video processing platform. Operational requirements are non-negotiable:
-- Object storage for raw uploads
-- Worker queues for async processing
-- Compute clusters for transcoding
-- CDN infrastructure for delivery
-- Webhook endpoints for status callbacks
+## Model observations, entities, and hypotheses separately
 
-These components are directly observable from product behavior. User uploads trigger storage writes, asynchronous processing generates progress indicators, completion events fire notifications, and playback requires content delivery infrastructure. Each functional step maps to specific backend systems.
+An observation is a recorded fact with a source and time: “`status.acme.example` had a CNAME to a vendor host at 10:20 UTC.” An entity is the thing a fact may describe: a domain, certificate, account, cloud resource, repository, or application. A hypothesis is an interpretation: “this hostname is probably a public status service controlled by Acme.”
 
-Similar determinism applies across domains. Payment processing mandates PCI-compliant isolation. Multi-tenant architectures require data segregation. Real-time functionality necessitates persistent connection infrastructure. Product capabilities expose infrastructure requirements.
+The distinction matters because the same observation supports more than one hypothesis. A CNAME can indicate active delegation, but a dangling record can outlive the service. A certificate SAN may contain a staging name even if the staging service no longer resolves. Keep the edge in the graph labelled **observed**, **inferred**, or **verified**.
 
-## Naming Conventions as Templates
+| Evidence | What it establishes | What it does not establish |
+| --- | --- | --- |
+| DNS A/AAAA answer | A resolver returned an address at a time | Exclusive ownership of that address |
+| CNAME to a vendor | A name delegates resolution toward a vendor | That the vendor account is live or claimable |
+| Certificate SAN | A certificate was issued for the name | A reachable application exists now |
+| Repository config | A committed file contains a hostname | The deployed system still uses that file |
+| Client JavaScript URL | A bundle references an origin or route | The server accepts the route or trusts the caller |
 
-Operational teams require consistency for maintainability. Arbitrary naming schemes across distributed services create management overhead, necessitating templated conventions.
+This is consistent with [OWASP’s attack-surface guidance](https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/01-Information_Gathering/04-Attack_Surface_Identification/), which treats domains, virtual hosts, exposed services, certificates, and non-obvious application paths as distinct pieces of the map.
 
-Discovery of `api-prod-us-east-1.company.com` reveals the template structure:
+## DNS is topology with caveats
 
-`{service}-{environment}-{region}.company.com`
+DNS provides a distributed naming system, not an asset inventory. An authoritative zone can contain A, AAAA, CNAME, MX, TXT, and other records with different operational roles; a recursive resolver can return a cached answer subject to TTL. [RFC 1034](https://www.rfc-editor.org/rfc/rfc1034) explains the domain tree and authoritative zones. A record’s presence is evidence of naming intent, while its target and current response are evidence about routing at the time of observation.
 
-This single observation permits systematic derivation:
-```
-api-staging-us-east-1.company.com
-api-prod-eu-west-1.company.com
-api-dev-us-east-1.company.com
-admin-prod-us-east-1.company.com
-webhooks-prod-us-east-1.company.com
-internal-prod-us-east-1.company.com
-```
+For `api.acme.example`, collect the exact queried name, record type, answer, resolver, TTL, and timestamp. Follow a CNAME chain rather than treating the first alias as an IP. Record both A and AAAA; a service may behave differently over IPv6. Compare authoritative answers with recursive answers when a discrepancy matters. Do not treat the apparent country or provider of an anycast or CDN IP as the application’s origin location.
 
-Environment segregation (dev/staging/prod), multi-region deployment for customer-facing services, administrative interfaces for operational access, and webhook handlers for third-party integration are operational necessities rather than assumptions.
+Cloud-specific aliases complicate the picture. Amazon Route 53 alias records can route to AWS resources and appear to an external DNS client as ordinary records of the selected type; the alias property is visible through Route 53 configuration rather than a generic DNS answer. [AWS Route 53 documentation](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html) describes the distinction. This is one reason to mark provider attribution as a hypothesis unless corroborated by owner-controlled records or configuration.
 
-## Certificate Transparency Logs
+## Certificate transparency is a history of issuance
 
-Certificate Transparency logs exist as a consequence of Let's Encrypt adoption and browser trust requirements. Each HTTPS service provisioning generates a publicly logged certificate, effectively creating an audit trail of infrastructure changes.
+Certificate Transparency (CT) logs are publicly auditable, append-only records of certificate issuance. They are useful for discovering names in certificate Subject Alternative Name (SAN) entries and for constructing a timeline of certificate activity. [RFC 6962](https://www.rfc-editor.org/rfc/rfc6962) describes the Merkle-tree design and the distinction between a signed promise to log and later inclusion proof.
 
-```bash
-curl -s "https://crt.sh/?q=%.example.com&output=json" | jq -r '.[].name_value' | sort -u
-```
+For each candidate name, record the certificate’s validity interval, issuer, SAN list, log timestamp, and whether the name currently resolves. Watch for wildcard names: `*.acme.example` says much less about the existence of any one host than a specific SAN does. Duplicate certificates and renewal automation can also make a name appear important simply because it appears often. CT can support a discovery hypothesis; it does not prove that a server was exposed, reachable, or in scope.
 
-The metadata provides strategic intelligence beyond domain enumeration:
+## Repositories and client bundles reveal dependency shapes
 
-**Temporal clustering**: Multiple certificates issued simultaneously with consistent naming patterns indicate automated deployment. The pattern describes service architecture.
+Public code and documentation can reveal deployment assumptions: environment-variable names, status endpoints, CDN paths, service identifiers, or configuration templates. Search for exact domains, package names, and vendor-specific patterns, then inspect commit age and repository ownership. A fork or archived example is a weaker clue than a current repository controlled by the target. [GitHub’s code navigation guidance](https://docs.github.com/en/repositories/working-with-files/using-files/navigating-code-on-github) describes how to follow symbols and references instead of relying on a single string match.
 
-**Expiration without renewal**: Abandoned infrastructure that may persist in an unmaintained and unpatched state.
+Client-side JavaScript is another dependency map. A bundle may contain an API base URL, a GraphQL operation name, or a feature flag. Treat these as **references**, not authorization. The application may have dead code, environment-specific branches, or server-side access checks. The safe next step is to document the candidate and confirm its scope before making active requests.
 
-**Third-party integration patterns**: Domains like `sso-okta.company.com` or `support-zendesk.company.com` enumerate the vendor stack. Each integration represents a trust boundary and potential pivot vector.
+## Turn clues into a testable architecture sketch
 
-## Cloud Providers and Organizational Structure
+Suppose a fictional organization has these observations:
 
-Cloud infrastructure nomenclature reveals organizational boundaries. AWS resource naming typically reflects permission segregation:
-```
-company-prod-frontend.s3.amazonaws.com
-company-prod-assets.s3.amazonaws.com  
-company-staging-uploads.s3.amazonaws.com
-company-dev-backups.s3.amazonaws.com
-```
+1. DNS returns `app.acme.example` as a CNAME to a CDN hostname.
+2. A CT log shows `api.acme.example` in a recent SAN entry.
+3. A public repository contains `PUBLIC_API_BASE=https://api.acme.example` in an example deployment file.
+4. The current application bundle requests `/v2/session` from that API origin.
 
-Environment-based naming indicates either separate AWS accounts or distinct IAM policy boundaries—standard practice under AWS Well-Architected Framework guidelines. Implications:
+Together they support a stronger hypothesis that an API sits behind the application than any clue alone. They still do not prove who owns the origin, whether the endpoint is in scope, or whether `/v2/session` accepts any particular method. A useful graph keeps the timestamps and provenance attached to each edge, then identifies what owner confirmation or permitted observation would resolve the remaining uncertainty.
 
-- Distinct AWS accounts per environment or strict IAM policy segregation
-- Each environment requires independent enumeration
-- Non-production environments typically have relaxed security controls
+<div class="simulation" data-sim="recon"><h3>Evidence-weighting exercise</h3><p>Select fictional clues and see how a provisional confidence score changes. This is a teaching heuristic, not a probability or authorization decision.</p><div class="sim-ui">Interactive exercise loading…</div></div>
 
-Compute instance DNS reveals geographic distribution. An instance at `ec2-52-12-34-56.compute-1.amazonaws.com` operates in us-east-1. Reverse DNS queries against the IP block frequently expose additional instances within the same deployment.
+## A repeatable workflow
 
-## Code Repositories as Documentation
+**1. Anchor scope.** Record the exact domains, programs, accounts, and exclusions supplied by the owner. A discovered neighbor is not automatically in scope.
 
-Public repositories occasionally leak credentials, but their primary reconnaissance value lies in architectural documentation:
+**2. Collect passive observations.** Query permitted public DNS records and CT logs, inspect public owner-controlled documentation, and record timestamps, source URLs, and raw values. Avoid collapsing “seen in a log” into “currently live.”
 
-**CI/CD configurations**: Files such as `.github/workflows`, `.gitlab-ci.yml`, and `Jenkinsfile` document deployment pipelines—target environments, service dependencies, and referenced secrets (regardless of value exposure).
+**3. Normalize identities.** Keep hostnames, IPs, organizations, certificates, and vendor tenants as different node types. An IP may be shared; an organization name may be a string coincidence.
 
-**Infrastructure as Code**: Terraform and CloudFormation templates explicitly define security groups, network topology, and service mesh configuration. Pattern reuse is common even across private repositories.
+**4. Form explicit hypotheses.** Write “likely CDN front end because…” or “possible abandoned alias because…”. Attach a confidence level and a disconfirming test. Use evidence from independent sources where possible.
 
-**Container definitions**: Docker Compose files enumerate service dependencies. If `user-service` communicates with `payment-api` and `notification-worker`, those services exist and their communication paths are documented.
+**5. Verify only within scope.** Any request that touches a service, account, or vendor endpoint should follow the program’s rules. Record what the active test actually observed, including error responses and timing, rather than converting an inference into a finding.
 
-**Git history**: Current branches undergo sanitization. Historical commits do not. Developers commit sensitive data, remove it from HEAD, and assume safety. Credentials, staging URLs, internal endpoints, and debug configurations persist in reflog.
+**6. Revisit the graph.** Infrastructure changes. TTLs expire, certificates renew, and deployment files become stale. A useful map has timestamps and can be updated without rewriting its history.
 
-## Client-Side Code Exposure
+The goal is not maximum hostname count. It is a map that another researcher or owner can audit: what was observed, what was inferred, what remains uncertain, and which permitted action would make the next answer more reliable.
 
-Single-page applications bundle their entire API surface into the downloaded JavaScript. Developers embed API endpoints, feature flags, and internal routes in client code because runtime execution requires their presence:
+### Sources and further reading
 
-```javascript
-const API_ENDPOINTS = {
-  prod: 'https://api.example.com',
-  staging: 'https://api-staging.example.com',
-  dev: 'https://api-dev.example.com'
-}
-```
-
-This occurs during feature development when developers hardcode endpoints for testing and fail to remove them before production deployment. Feature flags, administrative routes, and internal APIs persist in minified JavaScript.
-
-Browser developer tools facilitate extraction:
-- localStorage/sessionStorage frequently contain authentication tokens and API keys
-- Service Workers cache API responses including internal endpoints
-- Global scope inspection via `Object.keys(window)` reveals custom objects
-
-Debugging artifacts such as `window.__CONFIG__`, `window.appSettings`, and `window.API_BASE` are commonly attached to the global scope.
-
-## DNS Records as Infrastructure Metadata
-
-DNS records document email infrastructure, security policies, and service dependencies beyond simple hostname resolution.
-
-**Zone transfers** (rarely successful but trivial to test):
-```bash
-dig @ns1.example.com example.com AXFR
-```
-
-**SPF records** enumerate authorized mail infrastructure:
-```bash
-dig example.com TXT | grep spf
-```
-Reveals SendGrid, Mailgun, G Suite, or alternative mail providers—each representing an integration point and trust boundary.
-
-**DMARC records** expose reporting endpoints:
-```bash
-dig _dmarc.example.com TXT
-```
-The `rua=` parameter contains email addresses for aggregate reports, frequently pointing to internal domains or third-party security monitoring services.
-
-**CAA records** define certificate authority restrictions:
-```bash
-dig example.com CAA
-```
-Single-CA restrictions document certificate issuance procedures and security control posture.
-
-## IP Space and Neighbor Discovery
-
-Cloud infrastructure and shared hosting environments result in non-unique IP-to-service mappings. Single IPs frequently host multiple domains, while related services cluster within subnet boundaries.
-
-```bash
-# Enumerate additional domains on shared IP
-curl "https://api.hackertarget.com/reverseiplookup/?q=52.12.34.56"
-
-# Probe adjacent IP addresses in subnet
-for i in {1..255}; do 
-  dig -x 52.12.34.$i +short
-done
-```
-
-Network teams allocate IP addresses sequentially for operational efficiency. If `db-prod.example.com` resolves to `52.12.34.10`, adjacent addresses (`52.12.34.11`, `52.12.34.12`) likely host related services within the same deployment.
-
-## Favicon Hashing for Fingerprinting
-
-Administrative panels and frameworks deploy with default favicons that frequently remain unmodified. Favicon hashing enables identification of all instances of specific software across the internet.
-
-```bash
-curl -s https://target.com/favicon.ico | md5sum
-```
-
-Query Shodan with the hash:
-```
-http.favicon.hash:12345678
-```
-
-Results include all instances of the software, including forgotten administrative panels, unmaintained appliances, and abandoned monitoring dashboards.
-
-## Historical Snapshots
-
-The Internet Archive preserves historical website versions. Infrastructure evolution rarely includes comprehensive decommissioning. Archived snapshots reveal:
-- Documented but undeprecated APIs
-- Previously public staging URLs
-- Persisting legacy subdomains
-- Unchanged directory structures
-
-```bash
-curl "http://web.archive.org/cdx/search/cdx?url=*.example.com&output=json&fl=original&collapse=urlkey"
-```
-
-Proper decommissioning requires deliberate effort. API endpoints from previous iterations frequently remain operational but unmaintained and unmonitored.
-
-## Public Technical Documentation
-
-Engineers document architecture through blog posts, conference presentations, and technical Q&A platforms. Public knowledge sharing serves professional reputation building.
-
-- Job postings enumerate technology stacks (AWS, Kubernetes, specific frameworks)
-- Conference talks detail architectural decisions and technical constraints
-- Engineering blogs document migrations and infrastructure challenges
-- Stack Overflow answers contain sanitized but structurally accurate code samples
-- LinkedIn profiles list project involvement and technology proficiency
-
-Query patterns such as `example.com site:stackoverflow.com` or `site:github.com` expose engineers debugging production issues with minimally obfuscated internal details.
-
-## Target Prioritization
-
-Infrastructure possesses variable security posture and operational value. Focus on security asymmetries:
-
-**Reduced security environments**:
-- Non-production environments (reduced monitoring, relaxed controls)
-- Legacy systems (outdated dependencies, organizational neglect)
-- Acquired company infrastructure (inconsistent security standards)
-- Third-party integrations (ambiguous ownership)
-
-**Inadvertently public internal tools**:
-- Administrative panels (authenticated but discoverable)
-- Internal applications (inconsistent IP restrictions)
-- CI/CD systems (Jenkins, GitLab instances)
-- Monitoring and logging platforms (Grafana, Kibana)
-
-**Data storage systems**:
-- Object storage with misconfigured ACLs
-- Internet-exposed databases
-- Backup infrastructure (deprioritized in security reviews)
-
-## Methodology
-
-The reconnaissance process:
-
-1. **Business analysis**: Determine product functionality and required infrastructure.
-
-2. **Passive enumeration**: Certificate transparency logs, DNS records, public repositories, archived content.
-
-3. **Pattern extraction**: Identify naming conventions from discovered assets and derive templates.
-
-4. **Systematic expansion**: Apply templates across environments, regions, and service categories.
-
-5. **Technology fingerprinting**: Identify running software, versions, and frameworks.
-
-6. **Priority targeting**: Focus on reduced-security environments (staging, legacy, neglected systems).
-
-7. **Asset validation**: Confirm accessibility and operational status.
-
-## Analytical Framework
-
-Reconnaissance is not tool execution and data collection. Tools produce data; analysis extracts intelligence.
-
-Infrastructure should be interpreted like source code—identify patterns, understand constraints, recognize assumptions. Organizations build systems to address specific problems under defined limitations. These limitations generate predictable patterns.
-
-The objective is not exhaustive discovery through brute force, but rather developing sufficient understanding that subsequent discoveries become obvious in retrospect. This represents reasoning from organizational behavior and operational requirements rather than speculation.
-
-Effective reconnaissance occurs when asset discovery feels inevitable—"this exists because they require it for X." Ineffective reconnaissance produces random discoveries without understanding their systemic purpose.
+- [OWASP WSTG, Attack Surface Identification](https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/01-Information_Gathering/04-Attack_Surface_Identification/)
+- [RFC 1034, Domain Concepts and Facilities](https://www.rfc-editor.org/rfc/rfc1034)
+- [RFC 6962, Certificate Transparency](https://www.rfc-editor.org/rfc/rfc6962)
+- [AWS Route 53, alias and CNAME records](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html)

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090909">
+  <title>Infrastructure Patterns and Recon: How Systems Betray Themselves — Manas</title><meta name="description" content="A technical method for turning DNS, certificate logs, code, and client-side clues into testable infrastructure hypotheses without confusing correlation with ownership."><link rel="canonical" href="https://manasraj.vercel.app/articles/thinking-like-infrastructure.html">
+  <meta property="og:type" content="article"><meta property="og:title" content="Infrastructure Patterns and Recon: How Systems Betray Themselves"><meta property="og:description" content="A technical method for turning DNS, certificate logs, code, and client-side clues into testable infrastructure hypotheses without confusing correlation with ownership."><meta property="og:url" content="https://manasraj.vercel.app/articles/thinking-like-infrastructure.html"><meta property="og:image" content="https://manasraj.vercel.app/public/figures/recon-og.png"><meta property="article:published_time" content="2026-02-11"><meta property="article:modified_time" content="2026-09-26"><meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../favicon.png" type="image/png"><link rel="alternate" type="application/rss+xml" title="Manas field notes" href="../feed.xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css?v=7"><script src="../vendor/anime.umd.min.js" defer></script><script src="../site.js?v=7" defer></script><script src="../sims.js?v=7" defer></script><script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]},options:{enableMenu:false}};</script><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" defer></script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Infrastructure Patterns and Recon: How Systems Betray Themselves","description":"A technical method for turning DNS, certificate logs, code, and client-side clues into testable infrastructure hypotheses without confusing correlation with ownership.","datePublished":"2026-02-11","dateModified":"2026-09-26","image":"https://manasraj.vercel.app/public/figures/recon-og.png","mainEntityOfPage":"https://manasraj.vercel.app/articles/thinking-like-infrastructure.html","author":{"@type":"Person","name":"Manas","url":"https://manasraj.vercel.app"},"publisher":{"@type":"Person","name":"Manas"}}</script>
+</head><body data-page="article"><a class="skip-link" href="#main">Skip to content</a><div class="site-shell">
+  <header class="site-header"><a class="brand" href="../index.html" aria-label="Manas home"><span class="brand-glyph">M<span>/</span></span><span>MANAS<span class="red">.</span></span></a><nav aria-label="Primary"><a href="../index.html#lab">Lab</a><a href="../index.html#work">Projects</a><a href="../archive.html" aria-current="page">Writing</a><a href="../index.html#about">About</a></nav><div class="header-status mono"><span class="pulse-dot"></span><span id="local-clock">LOCAL / --:--</span></div><a class="header-contact mono" href="mailto:dev.manas@protonmail.com">CONTACT <span>↗</span></a></header>
+  <main id="main" class="inner-main article-main"><a class="back-link" href="../archive.html">← ALL FIELD NOTES</a><article class="article-shell"><header class="article-header"><div class="eyebrow"><span class="red-rule"></span> FIELD NOTE / Feb 11, 2026 / 7 MIN READ</div><h1>Infrastructure Patterns and Recon: How Systems Betray Themselves</h1><p>A technical method for turning DNS, certificate logs, code, and client-side clues into testable infrastructure hypotheses without confusing correlation with ownership.</p></header><nav class="article-toc" aria-label="On this page"><strong>ON THIS PAGE</strong><a class="" href="#model-observations-entities-and-hypotheses-separately">Model observations, entities, and hypotheses separately</a><a class="" href="#dns-is-topology-with-caveats">DNS is topology with caveats</a><a class="" href="#certificate-transparency-is-a-history-of-issuance">Certificate transparency is a history of issuance</a><a class="" href="#repositories-and-client-bundles-reveal-dependency-shapes">Repositories and client bundles reveal dependency shapes</a><a class="" href="#turn-clues-into-a-testable-architecture-sketch">Turn clues into a testable architecture sketch</a><a class="toc-subitem" href="#evidence-weighting-exercise">Evidence-weighting exercise</a><a class="" href="#a-repeatable-workflow">A repeatable workflow</a><a class="toc-subitem" href="#sources-and-further-reading">Sources and further reading</a></nav><div class="article-body"><p>Reconnaissance is often described as collecting names and IP addresses. The difficult part comes afterward: deciding what the observations mean. An unfamiliar hostname can be a production service, an abandoned alias, a vendor tenant, or a historical artifact. A certificate can reveal a name without proving that a service is still deployed. A shared IP can connect unrelated customers. Good recon therefore looks less like a list and more like an <strong>evidence graph</strong>.</p>
+<p>This method is for systems within an authorized scope. The examples use fictional <code>acme.example</code> names and synthetic observations. Passive clues can guide a review; they do not expand the permission granted by a program or asset owner.</p>
+<p><img src="/public/figures/recon-graph.svg" alt="Fictional infrastructure evidence graph linking DNS, CT, repositories, and client code"></p>
+<h2 id="model-observations-entities-and-hypotheses-separately">Model observations, entities, and hypotheses separately</h2>
+<p>An observation is a recorded fact with a source and time: “<code>status.acme.example</code> had a CNAME to a vendor host at 10:20 UTC.” An entity is the thing a fact may describe: a domain, certificate, account, cloud resource, repository, or application. A hypothesis is an interpretation: “this hostname is probably a public status service controlled by Acme.”</p>
+<p>The distinction matters because the same observation supports more than one hypothesis. A CNAME can indicate active delegation, but a dangling record can outlive the service. A certificate SAN may contain a staging name even if the staging service no longer resolves. Keep the edge in the graph labelled <strong>observed</strong>, <strong>inferred</strong>, or <strong>verified</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Evidence</th>
+<th>What it establishes</th>
+<th>What it does not establish</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>DNS A/AAAA answer</td>
+<td>A resolver returned an address at a time</td>
+<td>Exclusive ownership of that address</td>
+</tr>
+<tr>
+<td>CNAME to a vendor</td>
+<td>A name delegates resolution toward a vendor</td>
+<td>That the vendor account is live or claimable</td>
+</tr>
+<tr>
+<td>Certificate SAN</td>
+<td>A certificate was issued for the name</td>
+<td>A reachable application exists now</td>
+</tr>
+<tr>
+<td>Repository config</td>
+<td>A committed file contains a hostname</td>
+<td>The deployed system still uses that file</td>
+</tr>
+<tr>
+<td>Client JavaScript URL</td>
+<td>A bundle references an origin or route</td>
+<td>The server accepts the route or trusts the caller</td>
+</tr>
+</tbody></table>
+<p>This is consistent with <a href="https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/01-Information_Gathering/04-Attack_Surface_Identification/">OWASP’s attack-surface guidance</a>, which treats domains, virtual hosts, exposed services, certificates, and non-obvious application paths as distinct pieces of the map.</p>
+<h2 id="dns-is-topology-with-caveats">DNS is topology with caveats</h2>
+<p>DNS provides a distributed naming system, not an asset inventory. An authoritative zone can contain A, AAAA, CNAME, MX, TXT, and other records with different operational roles; a recursive resolver can return a cached answer subject to TTL. <a href="https://www.rfc-editor.org/rfc/rfc1034">RFC 1034</a> explains the domain tree and authoritative zones. A record’s presence is evidence of naming intent, while its target and current response are evidence about routing at the time of observation.</p>
+<p>For <code>api.acme.example</code>, collect the exact queried name, record type, answer, resolver, TTL, and timestamp. Follow a CNAME chain rather than treating the first alias as an IP. Record both A and AAAA; a service may behave differently over IPv6. Compare authoritative answers with recursive answers when a discrepancy matters. Do not treat the apparent country or provider of an anycast or CDN IP as the application’s origin location.</p>
+<p>Cloud-specific aliases complicate the picture. Amazon Route 53 alias records can route to AWS resources and appear to an external DNS client as ordinary records of the selected type; the alias property is visible through Route 53 configuration rather than a generic DNS answer. <a href="https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html">AWS Route 53 documentation</a> describes the distinction. This is one reason to mark provider attribution as a hypothesis unless corroborated by owner-controlled records or configuration.</p>
+<h2 id="certificate-transparency-is-a-history-of-issuance">Certificate transparency is a history of issuance</h2>
+<p>Certificate Transparency (CT) logs are publicly auditable, append-only records of certificate issuance. They are useful for discovering names in certificate Subject Alternative Name (SAN) entries and for constructing a timeline of certificate activity. <a href="https://www.rfc-editor.org/rfc/rfc6962">RFC 6962</a> describes the Merkle-tree design and the distinction between a signed promise to log and later inclusion proof.</p>
+<p>For each candidate name, record the certificate’s validity interval, issuer, SAN list, log timestamp, and whether the name currently resolves. Watch for wildcard names: <code>*.acme.example</code> says much less about the existence of any one host than a specific SAN does. Duplicate certificates and renewal automation can also make a name appear important simply because it appears often. CT can support a discovery hypothesis; it does not prove that a server was exposed, reachable, or in scope.</p>
+<h2 id="repositories-and-client-bundles-reveal-dependency-shapes">Repositories and client bundles reveal dependency shapes</h2>
+<p>Public code and documentation can reveal deployment assumptions: environment-variable names, status endpoints, CDN paths, service identifiers, or configuration templates. Search for exact domains, package names, and vendor-specific patterns, then inspect commit age and repository ownership. A fork or archived example is a weaker clue than a current repository controlled by the target. <a href="https://docs.github.com/en/repositories/working-with-files/using-files/navigating-code-on-github">GitHub’s code navigation guidance</a> describes how to follow symbols and references instead of relying on a single string match.</p>
+<p>Client-side JavaScript is another dependency map. A bundle may contain an API base URL, a GraphQL operation name, or a feature flag. Treat these as <strong>references</strong>, not authorization. The application may have dead code, environment-specific branches, or server-side access checks. The safe next step is to document the candidate and confirm its scope before making active requests.</p>
+<h2 id="turn-clues-into-a-testable-architecture-sketch">Turn clues into a testable architecture sketch</h2>
+<p>Suppose a fictional organization has these observations:</p>
+<ol>
+<li>DNS returns <code>app.acme.example</code> as a CNAME to a CDN hostname.</li>
+<li>A CT log shows <code>api.acme.example</code> in a recent SAN entry.</li>
+<li>A public repository contains <code>PUBLIC_API_BASE=https://api.acme.example</code> in an example deployment file.</li>
+<li>The current application bundle requests <code>/v2/session</code> from that API origin.</li>
+</ol>
+<p>Together they support a stronger hypothesis that an API sits behind the application than any clue alone. They still do not prove who owns the origin, whether the endpoint is in scope, or whether <code>/v2/session</code> accepts any particular method. A useful graph keeps the timestamps and provenance attached to each edge, then identifies what owner confirmation or permitted observation would resolve the remaining uncertainty.</p>
+<div class="simulation" data-sim="recon"><h3 id="evidence-weighting-exercise">Evidence-weighting exercise</h3><p>Select fictional clues and see how a provisional confidence score changes. This is a teaching heuristic, not a probability or authorization decision.</p><div class="sim-ui">Interactive exercise loading…</div></div>
+
+<h2 id="a-repeatable-workflow">A repeatable workflow</h2>
+<p><strong>1. Anchor scope.</strong> Record the exact domains, programs, accounts, and exclusions supplied by the owner. A discovered neighbor is not automatically in scope.</p>
+<p><strong>2. Collect passive observations.</strong> Query permitted public DNS records and CT logs, inspect public owner-controlled documentation, and record timestamps, source URLs, and raw values. Avoid collapsing “seen in a log” into “currently live.”</p>
+<p><strong>3. Normalize identities.</strong> Keep hostnames, IPs, organizations, certificates, and vendor tenants as different node types. An IP may be shared; an organization name may be a string coincidence.</p>
+<p><strong>4. Form explicit hypotheses.</strong> Write “likely CDN front end because…” or “possible abandoned alias because…”. Attach a confidence level and a disconfirming test. Use evidence from independent sources where possible.</p>
+<p><strong>5. Verify only within scope.</strong> Any request that touches a service, account, or vendor endpoint should follow the program’s rules. Record what the active test actually observed, including error responses and timing, rather than converting an inference into a finding.</p>
+<p><strong>6. Revisit the graph.</strong> Infrastructure changes. TTLs expire, certificates renew, and deployment files become stale. A useful map has timestamps and can be updated without rewriting its history.</p>
+<p>The goal is not maximum hostname count. It is a map that another researcher or owner can audit: what was observed, what was inferred, what remains uncertain, and which permitted action would make the next answer more reliable.</p>
+<h3 id="sources-and-further-reading">Sources and further reading</h3>
+<ul>
+<li><a href="https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/01-Information_Gathering/04-Attack_Surface_Identification/">OWASP WSTG, Attack Surface Identification</a></li>
+<li><a href="https://www.rfc-editor.org/rfc/rfc1034">RFC 1034, Domain Concepts and Facilities</a></li>
+<li><a href="https://www.rfc-editor.org/rfc/rfc6962">RFC 6962, Certificate Transparency</a></li>
+<li><a href="https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html">AWS Route 53, alias and CNAME records</a></li>
+</ul>
+</div></article><div class="article-end"><div class="eyebrow"><span class="red-rule"></span> END OF FIELD NOTE</div><h2>Keep investigating.</h2><p>There’s always another system worth understanding.</p><a class="button button-outline" href="../archive.html">More writing <span>↗</span></a></div></main>
+  <footer class="site-footer mono"><div><strong>MANAS<span class="red">.</span></strong><span>SECURITY RESEARCH / ENGINEERING</span></div><div><a href="../index.html">HOME ↗</a><a href="../feed.xml">RSS ↗</a><a href="mailto:dev.manas@protonmail.com">EMAIL ↗</a></div><span>© 2026 MANAS</span></footer>
+</div></body></html>

@@ -1,0 +1,27 @@
+/* The CLIx catalogue keeps its own layout, with the portfolio's palette. */
+:root{--bg:#090909;--panel:#151515;--ink:#f3f3f3;--muted:#aaa;--line:#3a3a3a;--acid:#ef3434;--paper:#fff;--coral:#ef3434;--lilac:#fff}
+body{background-color:#090909;background-image:linear-gradient(#ffffff08 1px,transparent 1px),linear-gradient(90deg,#ffffff08 1px,transparent 1px)}
+header{background:#090909e8;border-bottom-color:#444}.brand,.brand span,.brand:before{color:#fff}.brand span,.brand:before{color:var(--acid)}
+nav a,nav button,.online,.inventory,.resultbar,.resultbar button,footer{color:#aaa}
+nav .navactive,.topics .active,.topics button[data-topic=research].active,.topics button[data-topic=opsec].active{background:var(--acid);border-color:var(--acid);color:#fff!important;box-shadow:4px 4px 0 #ef34342a}
+nav span{background:#303030;color:#fff}.online i{box-shadow:6px -4px 0 #ef343430}
+.sectionhead button{border-color:#777;color:var(--acid)}
+.searchbox{background:#f3f3f3;border-color:#f3f3f3;box-shadow:4px 4px 0 #ef34342a}.searchbox:focus-within{border-color:var(--acid);box-shadow:4px 4px 0 #ef343477}
+.searchbox>span,input,kbd{color:#181818}input::placeholder{color:#666}kbd{border-color:#999;background:#ddd}
+select{background:#171717;border-color:#555;color:#fff}
+.topics button{background:#171717;border-color:#494949;color:#ddd}.topics button:before,.topics button[data-topic=research]:before,.topics button[data-topic=opsec]:before{color:var(--acid)}
+.topics .active:before,.topics button[data-topic=research].active:before,.topics button[data-topic=opsec].active:before{color:#fff}
+.chips button{color:#aaa}.chips .active{background:#2a1010;border-color:var(--acid);color:#fff}
+aside{background:#f3f3f3;color:#111;box-shadow:4px 5px 0 #ef34342a}aside:before{background:#ffffff9c;border-color:#aaa}
+aside>.smallcap,#tools button,.aside-note,.aside-note span{color:#555}#tools{scrollbar-color:#999 #eee}#tools button:hover{background:#ddd;color:#111}
+#tools button.active{background:#151515;color:#fff;border-left-color:var(--acid)}.aside-note{border-top-color:#aaa}
+.card,.guidecard{background:linear-gradient(120deg,#1d1d1de8,#111e);border-color:#444;border-radius:2px;box-shadow:inset 0 1px #fff1}
+.card:hover{background:#202020;border-color:var(--acid)}.card:before,.card:nth-child(4n):before,.card:nth-child(4n + 2):before{background:var(--acid)}
+.platform,.card p,.card-foot,.star,.pagination>span,.guidecard p,.guide-steps li{color:#aaa}.platform:before{color:var(--acid);border-right-color:#555}
+.command{color:#fff}.snippetrow,.codebox{background:#080808;border-color:#444}.snippet,.codebox code{color:#eee}.snippet:before{color:var(--acid)}
+.copy-icon,.commandrow>.copy-icon{background:#171717;color:#fff;border-color:#555}.copy-icon:hover,.commandrow>.copy-icon:hover{background:var(--acid);border-color:var(--acid);color:#fff}
+.card-foot{border-top-color:#444}.card-foot button,.badge,.guidecard button{color:var(--acid)}
+footer{border-color:#444}dialog{background:#151515;border-color:#666;border-radius:2px;box-shadow:8px 8px 0 #ef34342b,0 20px 100px #0008}dialog::backdrop{background:#000b}dialog p{color:#bbb}.modalhead{border-bottom-color:#444}
+.warning{background:#ef343410;border-left-color:var(--acid)}#toast{background:var(--acid);color:#fff;border-color:#fff}
+.smallcap,.guidecard .smallcap,.guidecard:nth-child(3n + 2) .smallcap,.guidecard:nth-child(3n) .smallcap,.guide-steps li::marker{color:var(--acid)}
+.outcome{background:#211010}.guidecard:before{color:#ef343445}.portfolio-return{background:#090909;border-color:#777;box-shadow:4px 4px 0 var(--acid)}.portfolio-return:hover{background:var(--acid)}

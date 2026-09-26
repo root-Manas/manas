@@ -9,10 +9,11 @@ const { buildIndex, parsePost } = require('./build-blog');
 const exec = promisify(execFile);
 const root = path.resolve(__dirname, '..');
 const blogDir = path.join(root, 'blog');
+const uploadDir = path.join(root, 'public', 'uploads');
 const host = '127.0.0.1';
 const port = Number(process.env.BLOG_STUDIO_PORT || 4177);
 const session = crypto.randomBytes(24).toString('hex');
-const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.md': 'text/plain; charset=utf-8', '.png': 'image/png', '.webm': 'video/webm', '.woff2': 'font/woff2' };
+const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.md': 'text/plain; charset=utf-8', '.png': 'image/png', '.svg': 'image/svg+xml', '.xml': 'application/xml; charset=utf-8', '.webm': 'video/webm', '.woff2': 'font/woff2' };
 
 function reply(res, status, body, type = 'application/json; charset=utf-8') {
   res.writeHead(status, { 'Content-Type': type, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
@@ -21,7 +22,7 @@ function reply(res, status, body, type = 'application/json; charset=utf-8') {
 
 function safeSlug(slug) { return typeof slug === 'string' && /^[A-Za-z0-9_-]+$/.test(slug); }
 function frontmatter(post) {
-  return `---\ntitle: ${JSON.stringify(post.title)}\ndescription: ${JSON.stringify(post.description)}\ndate: ${JSON.stringify(post.date)}\ntags: ${JSON.stringify(post.tags.join(', '))}\n---\n\n${post.content.trim()}\n`;
+  return `---\ntitle: ${JSON.stringify(post.title)}\ndescription: ${JSON.stringify(post.description)}\ndate: ${JSON.stringify(post.date)}\nupdated: ${JSON.stringify(new Date().toISOString().slice(0, 10))}\nimage: ${JSON.stringify(post.image || '/public/og-card.png')}\ntags: ${JSON.stringify(post.tags.join(', '))}\n---\n\n${post.content.trim()}\n`;
 }
 function withinRoot(file) { return file === root || file.startsWith(root + path.sep); }
 function rejectIfForeign(req) {
@@ -32,7 +33,7 @@ async function readJson(req) {
   let text = '';
   for await (const chunk of req) {
     text += chunk;
-    if (text.length > 2_000_000) throw new Error('Post is too large.');
+    if (text.length > 6_000_000) throw new Error('Request is too large.');
   }
   return JSON.parse(text);
 }
@@ -50,12 +51,16 @@ async function publish(slug) {
   const remote = await git('rev-parse', 'origin/main');
   const ancestor = await git('merge-base', 'HEAD', 'origin/main');
   if (ancestor !== remote) throw new Error('Remote main has new commits. Sync your local checkout before publishing.');
-  await git('add', '--', `blog/${slug}.md`, 'blog/index.json');
-  const staged = await git('diff', '--cached', '--name-only', '--', `blog/${slug}.md`, 'blog/index.json');
-  if (staged) await git('commit', '-m', `Publish blog post: ${slug}`, '--', `blog/${slug}.md`, 'blog/index.json');
+  const source = fs.readFileSync(path.join(blogDir, `${slug}.md`), 'utf8');
+  const uploads = [...new Set(source.match(/\/public\/uploads\/[a-f0-9-]+\.(?:png|jpg|webp)/g) || [])]
+    .map(url => url.slice(1)).filter(file => fs.existsSync(path.join(root, file)));
+  const files = [`blog/${slug}.md`, 'blog/index.json', `articles/${slug}.html`, 'archive.html', 'sitemap.xml', 'feed.xml', ...uploads];
+  await git('add', '--', ...files);
+  const staged = await git('diff', '--cached', '--name-only', '--', ...files);
+  if (staged) await git('commit', '-m', `Publish blog post: ${slug}`, '--', ...files);
   const ahead = await git('rev-list', '--count', 'origin/main..HEAD');
   if (Number(ahead) > 0) await git('push', 'origin', 'HEAD:main');
-  return { message: Number(ahead) > 0 ? 'Published to main. Your deployment should update shortly.' : 'This post is already published.', url: `/post.html?slug=${encodeURIComponent(slug)}` };
+  return { message: Number(ahead) > 0 ? 'Published to main. Your deployment should update shortly.' : 'This post is already published.', url: `/articles/${encodeURIComponent(slug)}.html` };
 }
 
 const server = http.createServer(async (req, res) => {
@@ -73,6 +78,21 @@ const server = http.createServer(async (req, res) => {
       }
       if (req.method !== 'POST' || rejectIfForeign(req)) return reply(res, 403, { error: 'Request refused.' });
       const data = await readJson(req);
+      if (pathname === '/api/upload') {
+        const input = typeof data.data === 'string' ? data.data : '';
+        const match = input.match(/^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/=]+)$/);
+        if (!match) return reply(res, 400, { error: 'Choose a PNG, JPEG or WebP image.' });
+        const buffer = Buffer.from(match[2], 'base64');
+        const mime = match[1];
+        const valid = mime === 'png' ? buffer.subarray(0, 8).equals(Buffer.from('89504e470d0a1a0a', 'hex'))
+          : mime === 'jpeg' ? buffer.subarray(0, 3).equals(Buffer.from('ffd8ff', 'hex'))
+          : buffer.subarray(0, 4).toString() === 'RIFF' && buffer.subarray(8, 12).toString() === 'WEBP';
+        if (!valid || !buffer.length || buffer.length > 4_000_000) return reply(res, 400, { error: 'Image format is invalid or exceeds 4 MB.' });
+        fs.mkdirSync(uploadDir, { recursive: true });
+        const filename = `${crypto.randomUUID()}.${mime === 'jpeg' ? 'jpg' : mime}`;
+        fs.writeFileSync(path.join(uploadDir, filename), buffer, { flag: 'wx' });
+        return reply(res, 200, { url: `/public/uploads/${filename}` });
+      }
       if (pathname === '/api/save') {
         const title = String(data.title || '').trim();
         const description = String(data.description || '').trim();
@@ -85,9 +105,10 @@ const server = http.createServer(async (req, res) => {
         const file = path.join(blogDir, `${slug}.md`);
         if (data.originalSlug && data.originalSlug !== slug) return reply(res, 400, { error: 'The slug of an existing post cannot be changed.' });
         if (!data.originalSlug && fs.existsSync(file)) return reply(res, 409, { error: 'That slug already belongs to a post.' });
-        fs.writeFileSync(file, frontmatter({ title, description, date, tags, content }));
+        const previous = data.originalSlug && fs.existsSync(file) ? parsePost(fs.readFileSync(file, 'utf8'), slug) : null;
+        fs.writeFileSync(file, frontmatter({ title, description, date, tags, content, image: previous?.image }));
         buildIndex();
-        return reply(res, 200, { message: 'Saved locally.', slug, url: `/post.html?slug=${encodeURIComponent(slug)}` });
+        return reply(res, 200, { message: 'Saved locally.', slug, url: `/articles/${encodeURIComponent(slug)}.html` });
       }
       if (pathname === '/api/publish') return reply(res, 200, await publish(data.slug));
       return reply(res, 404, { error: 'Not found.' });
@@ -96,6 +117,7 @@ const server = http.createServer(async (req, res) => {
     let file = path.resolve(root, '.' + (pathname === '/' ? '/index.html' : pathname));
     if (!withinRoot(file) || file.includes(`${path.sep}.git${path.sep}`) || file.includes(`${path.sep}tools${path.sep}`) || file.includes(`${path.sep}node_modules${path.sep}`)) return reply(res, 404, { error: 'Not found.' });
     if (pathname === '/studio/' || pathname === '/studio/index.html') file = path.join(root, 'studio', 'index.html');
+    if (pathname === '/clix/' || pathname === '/clix/index.html') file = path.join(root, 'clix', 'index.html');
     if (!fs.existsSync(file) || !fs.statSync(file).isFile()) return reply(res, 404, { error: 'Not found.' });
     const type = types[path.extname(file)] || 'application/octet-stream';
     let body = fs.readFileSync(file);

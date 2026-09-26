@@ -1,0 +1,8 @@
+.commandrow,.snippetrow{display:flex;align-items:center;gap:10px;min-width:0}
+.commandrow .command{flex:1;min-width:0}
+.snippetrow{background:#10130e;border-radius:4px;padding-right:6px}
+.snippetrow .snippet{flex:1;min-width:0}
+.copy-icon{display:inline-flex;align-items:center;justify-content:center;gap:7px;flex-shrink:0;min-width:36px;min-height:36px;padding:8px;color:#c6d8b1;border:1px solid #394431;background:#1a2215;border-radius:5px}
+.copy-icon:hover{background:#2c3c1b;color:var(--acid)}
+.copy-icon svg{pointer-events:none}
+@media(pointer:coarse){.copy-icon{min-width:44px;min-height:44px}}

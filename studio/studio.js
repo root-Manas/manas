@@ -137,6 +137,41 @@ $('insert-link').addEventListener('click', () => {
     changed = true;
   } catch { message('Enter a valid https, http or mailto link.', true); }
 });
+let imageRange = null;
+$('insert-image').addEventListener('click', () => {
+  const selection = window.getSelection();
+  imageRange = selection.rangeCount && editor.contains(selection.anchorNode) ? selection.getRangeAt(0).cloneRange() : null;
+  $('image-file').click();
+});
+$('image-file').addEventListener('change', async event => {
+  const file = event.target.files[0];
+  event.target.value = '';
+  if (!file) return;
+  if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type) || file.size > 4_000_000) {
+    message('Choose a PNG, JPEG or WebP image under 4 MB.', true);
+    return;
+  }
+  try {
+    message('Uploading image to this computer…');
+    const dataUrl = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+    const uploaded = await api('/api/upload', { method: 'POST', body: JSON.stringify({ name: file.name, data: dataUrl }) });
+    const image = document.createElement('img');
+    image.src = uploaded.url;
+    image.alt = prompt('Describe this image for readers using screen readers:', file.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ')) || file.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
+    if (imageRange && editor.contains(imageRange.commonAncestorContainer)) {
+      imageRange.deleteContents();
+      imageRange.insertNode(image);
+    } else editor.append(image);
+    imageRange = null;
+    changed = true;
+    message('Image added to this article.');
+  } catch (error) { message(error.message, true); }
+});
 $('insert-code').addEventListener('click', () => {
   const code = prompt('Paste your code snippet');
   if (code === null) return;

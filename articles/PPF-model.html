@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090909">
+  <title>The Zero-Sum Silicon Game: Analyzing US Tech Dominance via the PPF Model — Manas</title><meta name="description" content="A production-possibilities model for semiconductor design, fabrication, packaging, and the bottlenecks that make simple zero-sum stories misleading."><link rel="canonical" href="https://manasraj.vercel.app/articles/PPF-model.html">
+  <meta property="og:type" content="article"><meta property="og:title" content="The Zero-Sum Silicon Game: Analyzing US Tech Dominance via the PPF Model"><meta property="og:description" content="A production-possibilities model for semiconductor design, fabrication, packaging, and the bottlenecks that make simple zero-sum stories misleading."><meta property="og:url" content="https://manasraj.vercel.app/articles/PPF-model.html"><meta property="og:image" content="https://manasraj.vercel.app/public/figures/ppf-og.png"><meta property="article:published_time" content="2024-06-01"><meta property="article:modified_time" content="2026-09-26"><meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../favicon.png" type="image/png"><link rel="alternate" type="application/rss+xml" title="Manas field notes" href="../feed.xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css?v=7"><script src="../vendor/anime.umd.min.js" defer></script><script src="../site.js?v=7" defer></script><script src="../sims.js?v=7" defer></script><script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]},options:{enableMenu:false}};</script><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" defer></script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"The Zero-Sum Silicon Game: Analyzing US Tech Dominance via the PPF Model","description":"A production-possibilities model for semiconductor design, fabrication, packaging, and the bottlenecks that make simple zero-sum stories misleading.","datePublished":"2024-06-01","dateModified":"2026-09-26","image":"https://manasraj.vercel.app/public/figures/ppf-og.png","mainEntityOfPage":"https://manasraj.vercel.app/articles/PPF-model.html","author":{"@type":"Person","name":"Manas","url":"https://manasraj.vercel.app"},"publisher":{"@type":"Person","name":"Manas"}}</script>
+</head><body data-page="article"><a class="skip-link" href="#main">Skip to content</a><div class="site-shell">
+  <header class="site-header"><a class="brand" href="../index.html" aria-label="Manas home"><span class="brand-glyph">M<span>/</span></span><span>MANAS<span class="red">.</span></span></a><nav aria-label="Primary"><a href="../index.html#lab">Lab</a><a href="../index.html#work">Projects</a><a href="../archive.html" aria-current="page">Writing</a><a href="../index.html#about">About</a></nav><div class="header-status mono"><span class="pulse-dot"></span><span id="local-clock">LOCAL / --:--</span></div><a class="header-contact mono" href="mailto:dev.manas@protonmail.com">CONTACT <span>↗</span></a></header>
+  <main id="main" class="inner-main article-main"><a class="back-link" href="../archive.html">← ALL FIELD NOTES</a><article class="article-shell"><header class="article-header"><div class="eyebrow"><span class="red-rule"></span> FIELD NOTE / Jun 1, 2024 / 6 MIN READ</div><h1>The Zero-Sum Silicon Game: Analyzing US Tech Dominance via the PPF Model</h1><p>A production-possibilities model for semiconductor design, fabrication, packaging, and the bottlenecks that make simple zero-sum stories misleading.</p></header><nav class="article-toc" aria-label="On this page"><strong>ON THIS PAGE</strong><a class="" href="#first-define-the-outputs">First define the outputs</a><a class="" href="#a-deliberately-small-ppf-model">A deliberately small PPF model</a><a class="toc-subitem" href="#explore-the-frontier">Explore the frontier</a><a class="" href="#why-the-frontier-is-not-the-whole-supply-chain">Why the frontier is not the whole supply chain</a><a class="" href="#static-allocation-versus-a-moving-frontier">Static allocation versus a moving frontier</a><a class="" href="#comparative-advantage-has-a-dependency-cost">Comparative advantage has a dependency cost</a><a class="" href="#how-to-use-the-model-without-overstating-it">How to use the model without overstating it</a><a class="toc-subitem" href="#sources-and-further-reading">Sources and further reading</a></nav><div class="article-body"><p>Calling semiconductor strategy a <em>zero-sum game</em> is useful only for a narrow question: with a fixed pool of skilled labor, capital, power, equipment, and time <strong>today</strong>, what must be deferred to do more of something else? The phrase becomes misleading when used as a permanent description of the industry. Tooling, training, research, trade, and better processes can move the frontier itself. Design and manufacturing also depend on one another; an additional designer is not a substitute for a lithography system.</p>
+<p>This article builds a production-possibilities frontier (PPF) as a <strong>model</strong>, then tests where that model breaks. It does not claim that the plotted units are measured U.S. output. The simulator below uses normalized illustrative values so that the assumptions are visible.</p>
+<p><img src="/public/figures/ppf-system.svg" alt="Two semiconductor production frontiers: a current trade-off and a possible outward shift"></p>
+<h2 id="first-define-the-outputs">First define the outputs</h2>
+<p>“Software versus hardware” is too coarse. A useful semiconductor model separates at least four capabilities:</p>
+<ol>
+<li><strong>Design</strong>: architecture, RTL, verification, EDA flows, and reusable IP.</li>
+<li><strong>Fabrication</strong>: process integration, wafer starts, yield, and equipment utilization.</li>
+<li><strong>Assembly and advanced packaging</strong>: substrate, interconnect, thermal design, and test.</li>
+<li><strong>Supporting inputs</strong>: chemicals, materials, tooling, utilities, logistics, and trained people.</li>
+</ol>
+<p>The outputs do not share a natural unit. A tape-out, a wafer start, and a packaged accelerator are different objects. For an analytical sketch, normalize each to an index of capability. Keep that normalization explicit; otherwise a graph can make incomparable quantities look interchangeable.</p>
+<p>NIST describes metrology needs spanning laboratory R&amp;D, prototyping, fabrication, assembly, packaging, and verification. That is a useful warning against treating “making chips” as one stage. <a href="https://www.nist.gov/system/files/documents/2023/06/05/CHIPS_Metrology-Gaps-in-the-Semi-Ecosystem_0.pdf">NIST’s metrology report</a> also notes that the U.S. led in design and R&amp;D while accounting for roughly 10% of commercial global production at the time of its 2023 assessment. That is a dated observation, not a current market-share estimate.</p>
+<h2 id="a-deliberately-small-ppf-model">A deliberately small PPF model</h2>
+<p>Let a short-run resource budget be $R$. Allocate a fraction $s$ to design and the remainder to fabrication. With diminishing returns, an illustrative model is:</p>
+<p>$$D(s)=A(sR)^\alpha,\qquad F(s)=B((1-s)R)^\beta,\qquad 0\le s\le 1$$</p>
+<p>Here $D$ and $F$ are normalized capabilities; $A$ and $B$ represent productivity; and $0&lt;\alpha,\beta&lt;1$ creates diminishing marginal returns. Holding $A$, $B$, $R$, and the exponents fixed, varying $s$ traces a frontier. A point inside it suggests unused or poorly matched resources <strong>under this model</strong>, not proof of real-world inefficiency.</p>
+<p>The local slope, $-dF/dD$, is an opportunity-cost measure: how much fabrication capability the model gives up for a small increase in design capability. Because the functions are curved, this cost changes with the starting allocation. Moving engineers between organizations is not instantaneous, however, and capital equipment cannot be reallocated like hours on a calendar. The mathematical slope is a thought experiment, not a staffing instruction.</p>
+<div class="simulation" data-sim="ppf"><h3 id="explore-the-frontier">Explore the frontier</h3><p>Move the allocation slider. The outputs are normalized model units, not observed national production.</p><div class="sim-ui">Interactive model loading…</div></div>
+
+<h2 id="why-the-frontier-is-not-the-whole-supply-chain">Why the frontier is not the whole supply chain</h2>
+<p>A design becomes a shipped chip only after fabrication, packaging, test, and delivery. If normalized stage capacities are $D$, $F$, $P$, and $T$, a toy bottleneck model is $Q=\min(D,F,P,T)$. The minimum is crude, but it exposes an important point: adding design capacity does little to final throughput when packaging is the limiting stage. The stages are often <strong>complements</strong>, even when a policy budget must be divided among them.</p>
+<p>The bottleneck can shift over time. A higher-yield process increases usable output from the same wafer starts; a packaging advance can unlock a design already waiting for integration; measurement and standards can improve both. NIST specifically identifies advanced packaging, models, interoperability, and supply-chain assurance as metrology priorities. These are not side issues to a design-versus-fab contest; they change the conversion of inputs into usable devices. <a href="https://www.nist.gov/chips/research-development-programs/metrology-program">NIST CHIPS Metrology Program</a>.</p>
+<h2 id="static-allocation-versus-a-moving-frontier">Static allocation versus a moving frontier</h2>
+<p>Three mechanisms can move the frontier outward:</p>
+<ul>
+<li><strong>Productivity</strong>: better process control, EDA, simulation, and yield learning raise $A$ or $B$.</li>
+<li><strong>Capacity</strong>: new equipment, facilities, power delivery, and trained teams increase the feasible resource base $R$.</li>
+<li><strong>Complementarity</strong>: shared standards, packaging, and research reduce coordination losses between stages.</li>
+</ul>
+<p>These mechanisms take different amounts of time. A new fab requires long-lived capital and a local ecosystem. A design team may scale differently, but depends on process design kits, EDA tools, and available foundry capacity. Investment can also fail to move the frontier if skilled labor, utilities, or packaging remain scarce. The correct question is therefore not simply “which side wins?” It is “which constraint is binding, over what horizon, and what intervention changes that constraint?”</p>
+<p>U.S. business R&amp;D data can inform this question, but expenditure is an <strong>input</strong>, not a direct measure of technical output. The <a href="https://ncses.nsf.gov/pubs/nsf25304">National Science Foundation’s semiconductor R&amp;D analysis</a> separates industry categories and describes the data source and limitations. It should be read alongside production, yield, trade, workforce, and packaging measures rather than substituted for them.</p>
+<h2 id="comparative-advantage-has-a-dependency-cost">Comparative advantage has a dependency cost</h2>
+<p>Specialization can raise aggregate output when organizations focus on what they do well and trade for the rest. In semiconductors, specialization also creates dependencies on foreign or single-source facilities, materials, and expertise. A PPF drawn for one country does not show the resilience of a global supply chain or the cost of a disruption. Nor does a domestic-capacity target automatically imply that every stage should be replicated at any cost.</p>
+<p>A more complete decision model would include expected output <strong>and</strong> exposure to rare interruptions. For example, a planner might compare two feasible portfolios under the same budget:</p>
+<table>
+<thead>
+<tr>
+<th>Portfolio</th>
+<th>Expected short-run output</th>
+<th>Disruption exposure</th>
+<th>Capability gained</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Specialize heavily</td>
+<td>Potentially higher</td>
+<td>Concentrated supplier risk</td>
+<td>Deep expertise in one stage</td>
+</tr>
+<tr>
+<td>Diversify selectively</td>
+<td>Potentially lower initially</td>
+<td>Some redundancy</td>
+<td>Learning and option value in constrained stages</td>
+</tr>
+</tbody></table>
+<p>Those are directions, not measured outcomes. The actual comparison requires probabilities, recovery times, substitution possibilities, and costs. “Domestic” alone is not a reliability metric; a single domestic site can also fail.</p>
+<h2 id="how-to-use-the-model-without-overstating-it">How to use the model without overstating it</h2>
+<ol>
+<li><strong>State the time horizon.</strong> A short-run allocation frontier and a decade-long investment frontier are different objects.</li>
+<li><strong>Name the constrained resource.</strong> Money, skilled labor, cleanroom capacity, water, power, and equipment are not interchangeable.</li>
+<li><strong>Measure each stage separately.</strong> Design starts, yield-adjusted wafer output, packaging capacity, and delivered devices answer different questions.</li>
+<li><strong>Test the bottleneck.</strong> If packaging is binding, shifting design resources toward fabrication may not move final deliveries.</li>
+<li><strong>Show uncertainty.</strong> Use ranges for productivity, demand, and disruption rather than a single precise-looking line.</li>
+</ol>
+<p>The PPF is valuable because it forces an opportunity-cost question. Its limit is equally valuable: the semiconductor ecosystem is a network of complementary stages whose frontier can move. A useful strategy measures both the trade-off <strong>and</strong> the mechanisms that make the trade-off less severe.</p>
+<h3 id="sources-and-further-reading">Sources and further reading</h3>
+<ul>
+<li><a href="https://www.nist.gov/system/files/documents/2023/06/05/CHIPS_Metrology-Gaps-in-the-Semi-Ecosystem_0.pdf">NIST, <em>Metrology Gaps in the Semiconductor Ecosystem</em> (2023)</a></li>
+<li><a href="https://www.nist.gov/chips/research-development-programs/metrology-program">NIST, CHIPS Metrology Program</a></li>
+<li><a href="https://ncses.nsf.gov/pubs/nsf25304">NSF NCSES, U.S. Business R&amp;D in Semiconductor-Related Industries</a></li>
+</ul>
+</div></article><div class="article-end"><div class="eyebrow"><span class="red-rule"></span> END OF FIELD NOTE</div><h2>Keep investigating.</h2><p>There’s always another system worth understanding.</p><a class="button button-outline" href="../archive.html">More writing <span>↗</span></a></div></main>
+  <footer class="site-footer mono"><div><strong>MANAS<span class="red">.</span></strong><span>SECURITY RESEARCH / ENGINEERING</span></div><div><a href="../index.html">HOME ↗</a><a href="../feed.xml">RSS ↗</a><a href="mailto:dev.manas@protonmail.com">EMAIL ↗</a></div><span>© 2026 MANAS</span></footer>
+</div></body></html>

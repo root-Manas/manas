@@ -2,49 +2,57 @@
   {
     "slug": "thinking-like-infrastructure",
     "title": "Infrastructure Patterns and Recon: How Systems Betray Themselves",
-    "description": "Understanding attack surface through operational requirements and organizational constraints rather than tooling.",
+    "description": "A technical method for turning DNS, certificate logs, code, and client-side clues into testable infrastructure hypotheses without confusing correlation with ownership.",
     "date": "2026-02-11",
+    "updated": "2026-09-26",
     "tags": [
       "recon",
       "infrastructure",
       "methodology"
     ],
+    "image": "/public/figures/recon-og.png",
     "readingMinutes": 7
   },
   {
     "slug": "antenna-wave-propagation",
     "title": "Antenna Theory and Wave Propagation: Fundamentals for Security Researchers",
-    "description": "A dive into the physics of RF communications, antenna design, and the implications for wireless security and signals intelligence.",
+    "description": "A practical derivation of wavelength, antenna gain, path loss, noise, multipath, and what a radio link budget can actually tell a security researcher.",
     "date": "2024-06-05",
+    "updated": "2026-09-26",
     "tags": [
       "RF",
       "wireless",
-      "signals"
+      "link budget"
     ],
-    "readingMinutes": 4
+    "image": "/public/figures/rf-og.png",
+    "readingMinutes": 5
   },
   {
     "slug": "PPF-model",
     "title": "The Zero-Sum Silicon Game: Analyzing US Tech Dominance via the PPF Model",
-    "description": "An economic analysis of the trade-offs between semiconductor manufacturing and software development using the Production Possibilities Frontier framework.",
+    "description": "A production-possibilities model for semiconductor design, fabrication, packaging, and the bottlenecks that make simple zero-sum stories misleading.",
     "date": "2024-06-01",
+    "updated": "2026-09-26",
     "tags": [
       "economics",
       "semiconductors",
-      "analysis"
+      "systems modeling"
     ],
-    "readingMinutes": 3
+    "image": "/public/figures/ppf-og.png",
+    "readingMinutes": 6
   },
   {
     "slug": "cron_jobs_to_priviliage_esc",
     "title": "Cron Jobs and Privilege Escalation: Mechanics and Mitigation",
     "description": "An analysis of misconfigured cron jobs as a vector for privilege escalation in Linux environments.",
     "date": "2024-05-09",
+    "updated": "2024-05-09",
     "tags": [
       "linux",
       "privilege escalation",
       "security"
     ],
+    "image": "/public/og-card.png",
     "readingMinutes": 2
   }
 ]
