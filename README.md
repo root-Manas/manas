@@ -1,6 +1,6 @@
 # Manas
 
-A black, white and red personal portfolio with an interactive 3D monogram and project videos. A light-mode switch carries across the portfolio, articles, CLIx and the local editor. The site includes an IP check, DNS lookup and local SHA-256 tool. The IP and DNS tools only call public services when clicked. Motion uses a local canvas scene and a vendored Anime.js bundle, and respects reduced motion settings.
+A black, white and red personal portfolio with an animated map of projects and tools. A light-mode switch carries across the portfolio, articles, CLIx and the local editor. The site includes an IP check, DNS lookup and local SHA-256 tool. The IP and DNS tools only call public services when clicked. Motion uses a vendored Anime.js bundle and respects reduced motion settings.
 
 The CLIx project is included at `/clix/` in this repository. It is served by the **same Vercel deployment** as the portfolio; the portfolio links to it directly. The original CLIx source remains at `D:/Projects/CLIx` for independent development. To refresh the hosted copy, copy its public HTML, CSS, JavaScript and data files into `clix/`, then deploy this repository.
 
