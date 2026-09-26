@@ -20,7 +20,7 @@ const { chromium } = require('playwright-core');
   assert.match(await page.locator('.video-visual video source').getAttribute('src'), /webdorks\.webm/);
   assert.equal(await page.locator('html').getAttribute('data-theme'), 'light');
   assert.equal(await page.locator('.research-map').count(), 0);
-  assert.equal(await page.locator('.project-card').count(), 5);
+  assert.equal(await page.locator('.project-card').count(), 6);
   await page.screenshot({ path: path.join(os.tmpdir(), 'manas-light-home.png') });
   await page.locator('.theme-toggle').click();
   assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
