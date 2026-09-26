@@ -2,10 +2,12 @@ const assert = require('node:assert/strict');
 
 const base = 'https://manasraj.vercel.app';
 const routes = [
-  ['/', "Hello, I'm"],
+  ['/', "hi, i'm"],
   ['/clix/', 'portfolio-theme.css'],
   ['/clix/style.css', '--'],
   ['/clix/portfolio-theme.css', '--'],
+  ['/folio.css', 'written portfolio'],
+  ['/clix/folio.css', 'paper and type'],
   ['/clix/app.js', 'function'],
   ['/articles/PPF-model.html', 'Explore the frontier'],
   ['/articles/antenna-wave-propagation.html', 'Radio link budget'],

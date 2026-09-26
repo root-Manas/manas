@@ -4,7 +4,7 @@
   const current = () => root.dataset.theme === 'light' ? 'light' : 'dark';
   const apply = theme => {
     root.dataset.theme = theme;
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? '#f4f2ee' : '#090909');
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? '#f7f5f0' : '#171715');
     try { localStorage.setItem(key, theme); } catch {}
     document.querySelectorAll('.theme-toggle').forEach(button => {
       button.textContent = theme === 'light' ? '☾ DARK' : '☼ LIGHT';

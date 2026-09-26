@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#090909">
-  <script>try{document.documentElement.dataset.theme=localStorage.getItem('manas-theme')||'dark'}catch{}</script>
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('manas-theme')||'light'}catch{document.documentElement.dataset.theme='light'}</script>
   <meta name="description" content="I'm Manas, a security researcher in Mumbai. Here are the tools I've built, what I'm writing, and a few things I use myself.">
   <link rel="canonical" href="https://manasraj.vercel.app/">
   <meta property="og:type" content="website"><meta property="og:title" content="Manas — Security Researcher in Mumbai"><meta property="og:description" content="Projects, writing, and a few small tools by Manas."><meta property="og:url" content="https://manasraj.vercel.app/"><meta property="og:image" content="https://manasraj.vercel.app/public/og-card.png">
@@ -13,8 +13,8 @@
   <link rel="icon" href="favicon.png?v=2" type="image/png"><link rel="manifest" href="public/manifest.json"><link rel="alternate" type="application/rss+xml" title="Manas field notes" href="feed.xml">
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=7"><link rel="stylesheet" href="motion.css?v=1"><link rel="stylesheet" href="personal.css?v=3"><link rel="stylesheet" href="theme.css?v=1"><link rel="stylesheet" href="scope.css?v=1">
-  <script src="theme.js?v=1" defer></script><script src="vendor/anime.umd.min.js" defer></script><script src="site.js?v=8" defer></script><script src="research-map.js?v=2" defer></script><script src="lab.js?v=7" defer></script><script src="blog.js?v=7" defer></script>
+  <link rel="stylesheet" href="styles.css?v=7"><link rel="stylesheet" href="theme.css?v=1"><link rel="stylesheet" href="folio.css?v=1">
+  <script src="theme.js?v=1" defer></script><script src="vendor/anime.umd.min.js" defer></script><script src="site.js?v=9" defer></script><script src="lab.js?v=7" defer></script><script src="blog.js?v=7" defer></script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Manas","url":"https://manasraj.vercel.app/","sameAs":["https://github.com/root-Manas","https://www.linkedin.com/in/manasraj-singh"],"jobTitle":"Security researcher"}</script>
 </head>
 <body data-page="home">
@@ -27,39 +27,16 @@
       <a class="header-contact mono" href="mailto:dev.manas@protonmail.com">EMAIL <span>↗</span></a>
     </header>
     <main id="main">
-      <section class="hero lab-panel" aria-labelledby="hero-title">
+      <section class="hero" aria-labelledby="hero-title">
         <div class="hero-grid">
           <div class="hero-copy">
-            <div class="hero-intro">
-              <img class="hero-portrait" src="public/assets/manas-avatar.png" alt="Illustrated portrait from Manas's GitHub profile" width="120" height="120">
-              <div><span class="eyebrow">Hello, I'm</span><h1 id="hero-title">Manas<span class="red">.</span></h1></div>
-            </div>
+            <span class="eyebrow">a personal note / mumbai, india</span>
+            <h1 id="hero-title">hi, i'm <span class="red">manas.</span></h1>
             <p>I'm a security researcher in Mumbai. I work on public and private research programs, build tools when I get tired of doing things by hand, and write down what I learn along the way.</p>
-            <div class="hero-actions"><a class="button button-red" href="#work">See my work <span>↗</span></a><a class="button button-outline" href="#about">More about me <span>→</span></a></div>
-            <div class="hero-quick mono"><a href="https://github.com/root-Manas" target="_blank" rel="noopener noreferrer">GITHUB ↗</a><a href="archive.html">WRITING ↗</a></div>
+            <div class="hero-actions"><a class="button button-red" href="#work">see my work <span>↗</span></a><a class="button button-outline" href="archive.html">read my writing <span>↗</span></a></div>
+            <div class="hero-quick mono"><span>elsewhere:</span><a href="https://github.com/root-Manas" target="_blank" rel="noopener noreferrer">github ↗</a><a href="mailto:dev.manas@protonmail.com">email ↗</a></div>
           </div>
-          <div class="research-map" aria-label="Explore Manas's projects and tools">
-            <div class="research-map-head mono"><span>EXPLORE MY WORK</span><span class="map-status"><i></i> 01 / 04</span></div>
-            <div class="research-map-stage">
-              <svg class="map-graphic" viewBox="0 0 700 700" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
-                <defs><radialGradient id="scope-glow"><stop offset="0" stop-color="#ef3434" stop-opacity=".18"/><stop offset="1" stop-color="#ef3434" stop-opacity="0"/></radialGradient></defs>
-                <circle cx="350" cy="350" r="315" fill="url(#scope-glow)"/>
-                <g class="scope-orbits"><circle cx="350" cy="350" r="280"/><circle cx="350" cy="350" r="249"/><circle cx="350" cy="350" r="216"/><circle cx="350" cy="350" r="151"/></g>
-                <g class="scope-arcs"><circle cx="350" cy="350" r="275"/><circle cx="350" cy="350" r="265"/><circle cx="350" cy="350" r="227"/></g>
-                <g class="map-ticks" id="map-ticks"></g>
-                <g class="scope-bars" id="scope-bars"></g>
-                <g class="scope-dots" id="scope-dots"></g>
-                <g class="map-sweep"><path d="M350 350 L350 73"/><circle cx="350" cy="74" r="6"/></g>
-              </svg>
-              <div class="map-focus" aria-live="polite"><span class="map-focus-index mono">01 / WEB SEARCH</span><strong class="map-focus-name">WebDorks</strong><p class="map-focus-copy">Search queries grouped by task and engine.</p><a class="map-focus-link mono" href="https://webdorks.vercel.app/" target="_blank" rel="noopener noreferrer">OPEN PROJECT ↗</a></div>
-            </div>
-            <div class="research-map-nav" aria-label="Choose a project or tool">
-              <button class="map-node is-active" type="button" data-map="webdorks" aria-pressed="true"><span>01</span>WebDorks</button>
-              <button class="map-node" type="button" data-map="clix" aria-pressed="false"><span>02</span>CLIx</button>
-              <button class="map-node" type="button" data-map="writing" aria-pressed="false"><span>03</span>Writing</button>
-              <button class="map-node" type="button" data-map="ip" aria-pressed="false"><span>04</span>IP check</button>
-            </div>
-          </div>
+          <figure class="hero-photo"><img class="hero-portrait" src="public/assets/manas-avatar.png" alt="Illustrated portrait from Manas's GitHub profile" width="400" height="400"><figcaption>fig. 01 / me, more or less.</figcaption></figure>
         </div>
       </section>
 
@@ -104,7 +81,7 @@
         </div>
       </section>
     </main>
-    <footer class="site-footer mono"><div><strong>MANAS<span class="red">.</span></strong><span>MADE IN MUMBAI</span></div><div><a href="https://github.com/root-Manas" target="_blank" rel="noopener noreferrer">GITHUB ↗</a><a href="https://www.linkedin.com/in/manasraj-singh" target="_blank" rel="noopener noreferrer">LINKEDIN ↗</a><a href="mailto:dev.manas@protonmail.com">EMAIL ↗</a></div><span>© 2026 MANAS</span></footer>
+    <footer class="site-footer mono"><div><strong>MANAS<span class="red">.</span></strong><span>mumbai, india</span></div><div><a href="https://github.com/root-Manas" target="_blank" rel="noopener noreferrer">github ↗</a><a href="https://www.linkedin.com/in/manasraj-singh" target="_blank" rel="noopener noreferrer">linkedin ↗</a><a href="mailto:dev.manas@protonmail.com">email ↗</a></div><span>© 2026 manas</span></footer>
   </div>
 </body>
 </html>
