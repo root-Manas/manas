@@ -43,6 +43,7 @@ const { chromium } = require('playwright-core');
   assert.match(await page.locator('#dns-result').innerText(), /93\.184\.215\.14/);
   await page.route('https://ipapi.co/json/', route => route.fulfill({ json: { ip: '203.0.113.7', city: 'Test City', country_name: 'Test Country', org: 'Test Network' } }));
   await page.locator('#check-ip').click();
+  await page.waitForFunction(() => document.querySelector('#ip-result')?.textContent?.includes('203.0.113.7'));
   assert.match(await page.locator('#ip-result').innerText(), /203\.0\.113\.7/);
   await page.goto('http://127.0.0.1:4177/archive.html');
   assert.equal(await page.locator('.archive-grid .post-card').count(), 4);
